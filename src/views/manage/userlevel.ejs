@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Member List</title>
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link href="//cdn.jsdelivr.net/npm/@sweetalert2/theme-dark@4/dark.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/dist/css/adminlte.min.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <style>
+    .block-click {
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<style>
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    background-color: #192434;
+}
+.nav-sidebar .nav-item>.nav-link {
+    margin-bottom: .2rem;
+    /* border-radius: 1.13333rem; */
+}
+
+
+.navbar-dark {
+    background-color: #003264;
+    border-color: #4b545c;
+}
+
+[class*=sidebar-dark-] .sidebar a {
+    color: #9cc6ff;
+}
+
+button, input, optgroup, select, textarea {
+    margin: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.content-wrapper {
+    background-color: #0e131b;
+}
+
+.table td, .table th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #192434;
+    background: #141b26;
+    color: white;
+}
+
+
+.card-header {
+    background-color: #192434;
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    padding: .75rem 1.25rem;
+    position: relative;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.navbar-dark {
+    background-color: #003264;
+    border-color: #557b9d;
+}
+.content .card{
+  
+  background-color: #0e131b !important;
+}
+
+
+.dashboard-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  background-color: #192434;
+  border-radius: 12px;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  margin-bottom:20px;
+}
+
+.dashboard-item h2 {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+.dashboard-item p {
+  font-size: 0.9rem;
+  color: #c4c4c4;
+}
+
+      </style>
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <%- include('nav') %>
+      <div class="content-wrapper">
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1 class="text-white">User promotion List</h1>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+        </section>
+
+        <div class="form-group" style="text-align: center">
+          <div class="d-flex">
+
+          
+            <input type="text" id="search" placeholder="Enter the member you are looking for" style="background-color: #141b26;color: white;" />
+          </div>
+          <button id="searchBtn" class="btn btn-primary">Search</button>
+        </div>
+
+        <!-- Main content -->
+        <section class="content">
+          <!-- Default box -->
+          
+          
+                
+            <div class="dashboard-card">
+    <div class="dashboard-item">
+      <h2 id="deposit-number">0</h2>
+      <p>Deposit number</p>
+    </div>
+    <div class="dashboard-item">
+      <h2 id="deposit-amount">0</h2>
+      <p>Deposit amount</p>
+    </div>
+    <div class="dashboard-item">
+      <h2 id="number-bettor">0</h2>
+      <p>Number of bettors</p>
+    </div>
+    <div class="dashboard-item">
+      <h2 id="total-bet-amount">0</h2>
+      <p>Total bet amount</p>
+    </div>
+    <div class="dashboard-item">
+      <h2 id="first-deposit">0</h2>
+      <p>Number of people making first deposit</p>
+    </div>
+    <div class="dashboard-item">
+      <h2 id="total-bet">0</h2>
+      <p>Total bet</p>
+    </div>
+  </div>
+  
+  
+          
+          
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Member List</h3>
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+            
+            
+      
+            
+            
+            
+            
+            <div class="card-body p-0" style="overflow-y: hidden">
+              <table class="table table-striped projects" id="table1">
+                <thead>
+                  <tr>
+                    <th class="text-center">#</th>
+                    <th class="text-center">userLevel</th>
+                    <th class="text-center">TotalRechargeAmount</th>
+                    <th class="text-center">TotalCommsionsAmount</th>
+                    <th class="text-center">totalBetAmount</th>
+               
+              
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- #region -->
+                </tbody>
+              </table>
+            </div>
+            
+            
+             
+       
+            <nav aria-label="Page navigation example" style="margin-top: 20px; display: flex; justify-content: center;background-color: #192434;">
+              <ul class="pagination" id="paginationContainer">
+                <!-- Pagination will be dynamically generated here -->
+              </ul>
+            </nav>
+          </div>
+        </section>
+      </div>
+  </div>
+  <script src="/plugins/jquery/jquery.min.js"></script>
+  <script src="/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/dist/js/adminlte.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+  <script src="/js/admin/admin.js"></script>
+
+  <script>
+    const Render = (datas) => {
+      let html = '';
+      datas.map((data) => {
+        html += `
+        <tr class="text-center" style="">
+          <td>${data.userId}</td>
+          
+          <td>${data.userLevel}</td>
+
+         
+          <td>
+            <b >${data.totalRechargeAmount}</b>
+          </td>
+          <td>
+            <b >${data.totalCommsionsAmount}</b>
+          </td>
+          <td>
+            <b>${data.totalBetAmount}</b>
+          </td>
+        
+        
+       
+        </tr>`;
+        $("tbody").html(html);
+      });
+      
+
+
+    }
+   
+    // Search button click event
+    $('#searchBtn').click(function () {
+      fetchData();
+    });
+
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const formattedDate = yesterday.toISOString().split('T')[0];
+    
+   
+  
+      const fetchData = () => {
+
+      let value = $('#search').val().toLowerCase();
+     
+
+      $.ajax({
+        type: "POST",
+        url: "/api/webapi/admin/manager/user-data",
+        data: {
+          id_user: value,
+          date:formattedDate,
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.status === true) {
+            Render(response.datas);
+            
+        
+            
+            
+            $("#deposit-number").text(response?.total_recharge_count)
+              $("#deposit-amount").text(response?.total_recharge_amount)
+              
+               $("#number-bettor").text(response?.better_number)
+                $("#total-bet-amount").text(response?.total_bet_amount)
+                $("#first-deposit").text(response?.total_first_recharge_count)
+                 $("#total-bet").text(response?.total_bet_count)
+                
+                     
+            
+          }
+        }
+      });
+    };
+    
+    
+
+    </script>
+    <script src="https://kit.fontawesome.com/5c9f82cc45.js" crossorigin="anonymous"></script>
+</body>
+
+</html>
