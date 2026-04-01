@@ -22,6 +22,8 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const server = http.createServer(app);
 const logFilePath = path.join(__dirname, "server.log");
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Helper function to log to file
 function logToFile(message) {

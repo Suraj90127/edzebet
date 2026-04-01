@@ -39,12 +39,14 @@ const PaymentPage = () => {
     const type = "submit";
 
     if (utr.length > 10) {
-      const formData = new FormData();
-      formData.append("utr", utr);
-      formData.append("typeid", rechargegetData?.id_order);
-      formData.append("type", type);
+       const data = {
+        utr: utr,
+        typeid: rechargegetData?.id_order,
+        type: type,
+      };
 
-      dispatch(recharge(formData)).then((res) => {
+  
+      dispatch(recharge(data)).then((res) => {
         setSuccessMessage(res.payload.message);
 
         if (res.payload.status) {

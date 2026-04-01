@@ -266,7 +266,8 @@ router.post('/api/webapi/handlewithdraw',  adminController.handlWithdrawlgpay);
     router.get('/api/webapi/new-subordinate', middlewareController, userController.newSubordinateData); // register
     router.get('/api/webapi/calculateDownlineBonuses', middlewareController, userController.calculateDownlineBonuses);
     // wallet
-    router.post('/api/webapi/recharge', middlewareController,upload.none(), userController.recharge);
+    // router.post('/api/webapi/recharge', middlewareController, upload.none(), userController.recharge);
+    router.post('/api/webapi/recharge', middlewareController, userController.recharge);
     router.post('/api/webapi/cancel_recharge', middlewareController, userController.cancelRecharge); // register
     router.post('/wowpay/create', middlewareController, userController.wowpay);
     router.post('/api/webapi/confirm_recharge', middlewareController, userController.confirmRecharge);

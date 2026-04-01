@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import CardImg from "../../assets/card.png";
 import USDtImg from "../../assets/usdt.png";
 import USDt1Img from "../../assets/usdt.png";
+import tron from "../../assets/tron.png";
 import {
   BsCheckCircleFill,
   BsPlusSquareDotted,
@@ -41,8 +42,8 @@ const Withdraw = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const tabs = [
-    { label: "Trx", Img: CardImg },
-    { label: "USDT", Img: USDtImg },
+    { label: "Trx", Img: tron },
+    // { label: "USDT", Img: USDtImg },
   ];
 
   const toggleShowPassword = () => {
@@ -338,7 +339,7 @@ const Withdraw = () => {
               </span>
               <p className="fs-sm gray-100 leading-[18px] ">
                 Withdrawal amount range{" "}
-                <span className="color-red-200">trx300.00-trx150,000.00</span>{" "}
+                <span className="color-red-200">trx 110.00-trx 150,000.00</span>{" "}
               </p>
             </li>
             <li className="flex mt-2">

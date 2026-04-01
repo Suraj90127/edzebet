@@ -38,16 +38,16 @@ export default function Recharge() {
   const [successMessage, setSuccessMessage] = useState("");
   const tabs = [
     { label: "Trx", Icons: tron },
-    { label: "USDT", Icons: "" },
+    // { label: "USDT", Icons: "" },
   ];
 
   const handleSubmit = async () => {
-    const type = "Trx";
-    const formData = new FormData();
-    formData.append("amount", amount);
-    formData.append("type", type);
+    const data = {
+      amount: amount,
+      type: "Trx",
+    };
 
-    dispatch(recharge(formData)).then((res) => {
+    dispatch(recharge(data)).then((res) => {
       setSuccessMessage(res.payload.message);
       if (res.payload.status) {
         setAlertsuccess(true);

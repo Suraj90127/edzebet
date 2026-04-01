@@ -35,7 +35,7 @@ const userInfo = async (req, res) => {
         const auth = req.cookies.auth;
 
         if (!auth) {
-        
+
             return res.status(200).json({
                 message: 'Token undefined',
                 status: false,
@@ -43,7 +43,7 @@ const userInfo = async (req, res) => {
             });
         }
 
-    
+
 
         // Query user information using the token
         const [users] = await connection.query(
@@ -51,10 +51,10 @@ const userInfo = async (req, res) => {
             [auth]
         );
 
-  
+
 
         if (!users.length) {
-        
+
             return res.status(200).json({
                 message: 'Invalid token',
                 status: false,
@@ -70,11 +70,11 @@ const userInfo = async (req, res) => {
 
 
         const telegram = settings.length ? settings[0].telegram : '';
-        const { code, id_user, name_user, money, userPhoto, vip_level, rebate,isdemo, recharge,totalRecharge,totalWithdraw } = users[0];
+        const { code, id_user, name_user, money, userPhoto, vip_level, rebate, isdemo, recharge, totalRecharge, totalWithdraw } = users[0];
         const phone = users[0].phone;
 
         // const balanceResponse = await axios.get(`https://allapi.codehello.site/api/checkBalance?playerId=${phone}`);
-  
+
 
         const response = res.status(200).json({
             message: 'User Details Successful',
@@ -94,16 +94,16 @@ const userInfo = async (req, res) => {
                 telegram,
                 totalRecharge,
                 totalWithdraw,
-                 betAmount: 0,
+                betAmount: 0,
             },
         });
 
-      
+
 
         return response;
 
     } catch (error) {
-   
+
         return res.status(500).json({
             message: 'Server error',
             error: error.message,
@@ -217,11 +217,11 @@ function timerJoin2(params = '', addHours = 0) {
 
     const formatter = new Intl.DateTimeFormat('en-GB', options);
     const parts = formatter.formatToParts(date);
-    
+
     const getPart = (type) => parts.find(part => part.type === type).value;
-    
+
     const formattedDate = `${getPart('year')}-${getPart('month')}-${getPart('day')} ${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
-    
+
     return formattedDate;
 }
 
@@ -542,9 +542,9 @@ const checkInHandling = async (req, res) => {
 const rebateCreate = async (req, res) => {
     const { amount } = req.body
     let auth = req.cookies.auth;
-      try {
+    try {
 
-        if (amount<=0) return res.status(200).json({
+        if (amount <= 0) return res.status(200).json({
             message: 'Amount is not',
             status: false,
             timeStamp: timeNow,
@@ -558,8 +558,8 @@ const rebateCreate = async (req, res) => {
         });;
 
 
-      
-        const sumdate =timerJoin2(Date.now())
+
+        const sumdate = timerJoin2(Date.now())
 
         await connection.query('INSERT INTO rebate SET phone = ?,amount=?,rate=?,commission=?,type=?, status=?,today=? ', [rows[0].phone, amount, 0.01, amount * 0.001, "Slotes", 1, sumdate]);
 
@@ -570,7 +570,7 @@ const rebateCreate = async (req, res) => {
             status: true,
             timeStamp: timeNow,
         });
-      
+
     } catch (error) {
         return res.status(500).json({
             message: `internal server error`,
@@ -754,7 +754,7 @@ const promotion = async (req, res) => {
         // Subtract one day
         const previousDate = new Date(currentDate);
         previousDate.setDate(currentDate.getDate() - 1);
-        
+
         // Format the date as YYYY-MM-DD
         currentDate = previousDate.toISOString().slice(0, 10);
 
@@ -939,22 +939,22 @@ const transactionHistory = async (req, res) => {
         const offset = (page - 1) * limit;
 
         const data = await connection.query('SELECT * FROM transaction_history WHERE phone = ? AND detail !="Agent Commission" ORDER BY id DESC LIMIT ? OFFSET ?', [user[0].phone, limit, offset]);
-        
-      const phone = user[0].phone;
-      
-      
 
-// await connection.query(
-//  "DELETE FROM `transaction_history` WHERE `phone` = ? AND `time` < DATE_SUB(NOW(), INTERVAL 1 MONTH)",
-//   [user[0].phone]
-// );
+        const phone = user[0].phone;
 
 
-await connection.query(  "DELETE FROM `transaction` WHERE `phone` = ? AND `today` <  DATE_SUB(NOW(), INTERVAL 1 MONTH)",  [user[0].phone]);
-  const sevenDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-await connection.query(  "DELETE FROM `roses` WHERE `phone` = ? AND time < ?",  [user[0].phone,sevenDaysAgo]);
 
- 
+        // await connection.query(
+        //  "DELETE FROM `transaction_history` WHERE `phone` = ? AND `time` < DATE_SUB(NOW(), INTERVAL 1 MONTH)",
+        //   [user[0].phone]
+        // );
+
+
+        await connection.query("DELETE FROM `transaction` WHERE `phone` = ? AND `today` <  DATE_SUB(NOW(), INTERVAL 1 MONTH)", [user[0].phone]);
+        const sevenDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        await connection.query("DELETE FROM `roses` WHERE `phone` = ? AND time < ?", [user[0].phone, sevenDaysAgo]);
+
+
 
         return res.status(200).send({
             success: true,
@@ -982,56 +982,56 @@ const totalCommission = async (req, res) => {
             timeStamp: timeNow,
         });
     }
-try {
+    try {
 
-    const [user] = await connection.query('SELECT `phone`, `code`,`invite`, `roses_f`, `roses_f1`, `roses_today` FROM users WHERE `token` = ? ', [auth]);
-    // Query for total balance
-    const [total] = await connection.execute(
-        `SELECT commission FROM subordinatedata WHERE phone = ? AND type = "bet commission"`,
-        [user[0].phone]
-    );
+        const [user] = await connection.query('SELECT `phone`, `code`,`invite`, `roses_f`, `roses_f1`, `roses_today` FROM users WHERE `token` = ? ', [auth]);
+        // Query for total balance
+        const [total] = await connection.execute(
+            `SELECT commission FROM subordinatedata WHERE phone = ? AND type = "bet commission"`,
+            [user[0].phone]
+        );
 
-    const totalBalance = total.reduce((sum, record) => {
-        return sum + parseFloat(record.commission);
-    }, 0);
+        const totalBalance = total.reduce((sum, record) => {
+            return sum + parseFloat(record.commission);
+        }, 0);
 
-    // Query for yesterday's balance
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const formattedDate = yesterday.toISOString().split('T')[0];
+        // Query for yesterday's balance
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const formattedDate = yesterday.toISOString().split('T')[0];
 
-    const [datas] = await connection.execute(
-        `SELECT commission FROM subordinatedata WHERE phone = ? AND DATE(date) = ? AND type = "bet commission"`,
-        [user[0].phone, formattedDate]
-    );
+        const [datas] = await connection.execute(
+            `SELECT commission FROM subordinatedata WHERE phone = ? AND DATE(date) = ? AND type = "bet commission"`,
+            [user[0].phone, formattedDate]
+        );
 
-    const yesterdayBalance = datas.reduce((sum, record) => {
-        return sum + parseFloat(record.commission);
-    }, 0);
+        const yesterdayBalance = datas.reduce((sum, record) => {
+            return sum + parseFloat(record.commission);
+        }, 0);
 
-    // Query for last 7 days' balance
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-    const formattedStartDate = sevenDaysAgo.toISOString().split('T')[0];
+        // Query for last 7 days' balance
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        const formattedStartDate = sevenDaysAgo.toISOString().split('T')[0];
 
-    const [weeks] = await connection.execute(
-        `SELECT commission FROM subordinatedata WHERE phone = ? AND DATE(date) >= ? AND type = "bet commission"`,
-        [user[0].phone, formattedStartDate]
-    );
+        const [weeks] = await connection.execute(
+            `SELECT commission FROM subordinatedata WHERE phone = ? AND DATE(date) >= ? AND type = "bet commission"`,
+            [user[0].phone, formattedStartDate]
+        );
 
-    const weekBalance = weeks.reduce((sum, record) => {
-        const balance = parseFloat(record.commission);
-        return sum + (isNaN(balance) ? 0 : balance);
-    }, 0);
+        const weekBalance = weeks.reduce((sum, record) => {
+            const balance = parseFloat(record.commission);
+            return sum + (isNaN(balance) ? 0 : balance);
+        }, 0);
 
-    return res.status(200).send({
-        success: true,
-        message: "Transaction commissions retrieved successfully",
-        totalBalance,
-        yesterdayBalance,
-        weekBalance
-    });
-    
+        return res.status(200).send({
+            success: true,
+            message: "Transaction commissions retrieved successfully",
+            totalBalance,
+            yesterdayBalance,
+            weekBalance
+        });
+
     } catch (error) {
         return res.status(500).send({
             success: false,
@@ -1160,10 +1160,16 @@ const recharge = async (req, res) => {
     let type = req.body.type;
     let typeid = req.body.typeid;
     let utr = req.body.utr;
+
+    console.log("type", type);
+    console.log("auth", auth);
+    console.log("money", money);
+    console.log("utr", utr);
+
     if (type != 'cancel' && type != 'submit' && type != 'submitauto') {
         if (!auth || !money || money <= 99) {
             return res.status(200).json({
-                message: 'Minimum recharge 200',
+                message: 'Minimum recharge 100',
                 status: false,
                 timeStamp: timeNow,
             })
@@ -1171,6 +1177,7 @@ const recharge = async (req, res) => {
     }
     const [user] = await connection.query('SELECT `phone`, `code`,`invite`,`isdemo` FROM users WHERE `token` = ?', [auth]);
     let userInfo = user[0];
+
     if (!user) {
         return res.status(200).json({
             message: 'Failed',
@@ -1178,20 +1185,19 @@ const recharge = async (req, res) => {
             timeStamp: timeNow,
         });
     };
-    if(userInfo.isdemo == 1)
-    {
-        
-        let time = timerJoin2(Date.now());
-        const date = new Date();
-      
-        let checkTime =timerJoin2(Date.now())
-        let id_time = date.getUTCFullYear() + '' + date.getUTCMonth() + 1 + '' + date.getUTCDate();
-        let id_order = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
-        // let vat = Math.floor(Math.random() * (2000 - 0 + 1) ) + 0;
-    
-        money = Number(money);
-        let client_transaction_id = id_time + id_order;
-    
+    let time = timerJoin2(Date.now());
+    const date = new Date();
+
+    let checkTime = timerJoin2(Date.now())
+    let id_time = date.getUTCFullYear() + '' + date.getUTCMonth() + 1 + '' + date.getUTCDate();
+    let id_order = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
+    // let vat = Math.floor(Math.random() * (2000 - 0 + 1) ) + 0;
+
+    money = Number(money);
+    let client_transaction_id = id_time + id_order;
+
+    if (userInfo.isdemo == 1) {
+
         const sql = `INSERT INTO recharge SET
             id_order = ?,
             transaction_id = ?,
@@ -1202,8 +1208,8 @@ const recharge = async (req, res) => {
             today = ?,
             url = ?,
             time = ?`;
-        await connection.execute(sql, [client_transaction_id, '0', userInfo.phone, money, "demo", 1, checkTime, '1', time]);   
-        
+        await connection.execute(sql, [client_transaction_id, '0', userInfo.phone, money, "demo", 1, checkTime, '1', time]);
+
         await connection.execute('UPDATE users SET money = money + ? WHERE phone = ? ', [money, userInfo.phone]);
         return res.status(200).json({
             message: 'Demo Amount is added',
@@ -1211,7 +1217,24 @@ const recharge = async (req, res) => {
             timeStamp: timeNow,
         });
     }
-    if (type == 'bank') {
+
+    if (type == 'Trx') {
+        const sql = `INSERT INTO recharge SET
+                id_order = ?,
+                transaction_id = ?,
+                phone = ?,
+                money = ?,
+                type = ?,
+                status = ?,
+                today = ?,
+                url = ?,
+                time = ?,
+                userStatus=?
+                
+                `;
+        await connection.execute(sql, [client_transaction_id, '0', userInfo.phone, money, type, 0, checkTime, '0', time, 0]);
+
+
         return res.status(200).json({
             message: 'Order creation successful',
             pay: true,
@@ -1221,9 +1244,6 @@ const recharge = async (req, res) => {
             timeStamp: timeNow,
         });
     }
-    
-    
-    
     if (type == 'submit') {
         const [utrcount] = await connection.query('SELECT * FROM recharge WHERE utr = ? ', [utr]);
         if (utrcount.length == 0) {
@@ -1240,100 +1260,13 @@ const recharge = async (req, res) => {
                 timeStamp: timeNow,
             });
         }
-    }
-
-
-
-    let time = timerJoin2(Date.now());
-    const date = new Date();
-  
-  
-    let checkTime =timerJoin2(Date.now());
-    let id_time = date.getUTCFullYear() + '' + date.getUTCMonth() + 1 + '' + date.getUTCDate();
-    let id_order = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
-    // let vat = Math.floor(Math.random() * (2000 - 0 + 1) ) + 0;
-
-    money = Number(money);
-    let client_transaction_id = id_time + id_order;
-    
-    
-    
-      function generateSign(params, secretKey) {
-      const paramString = Object.keys(params)
-        .sort()
-        .filter((key) => key !== "sign") // Exclude 'sign' from the string
-        .map((key) => `${key}=${params[key]}`)
-        .join("&");
-      const signString = `${paramString}&key=${secretKey}`;
-      return crypto.createHash("md5").update(signString).digest("hex");
-    }
-
-    // Validate required input parameters
-  
-
-    const callbackurl = `https://bdgwin99.biz/api/webapi/recharge-callback`;
-   const OrderIds = `${Date.now()}${Math.floor(Math.random() * 100000)}`;
-    // Sunpay request parameters
-    const params = {
-      version: "1.0",
-      mch_id: "100225491",
-      mch_order_no:OrderIds,
-      pay_type: "101",
-      trade_amount: `${money}`,
-      order_date: new Date().toISOString().slice(0, 19).replace("T", " "),
-      goods_name: "user goods_name",
-      notify_url: callbackurl,
-      mch_return_msg: "bdgwin",
-    };
-
-    const secretKey = "DQWRWHDBYZIN815E18ZDPB8H1TWMZVRU";
-    params.sign = generateSign(params, secretKey);
-    params.sign_type = "MD5";
-
-    // Sunpay API request
-    const sunpayResponse = await axios.post(
-      "https://api.watchglbpay.com/pay/web",
-      new URLSearchParams(params).toString(),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    );
-    
-       if(sunpayResponse.data.respCode==="SUCCESS"){
-         const sql = `INSERT INTO recharge SET
-        id_order = ?,
-        transaction_id = ?,
-        phone = ?,
-        money = ?,
-        type = ?,
-        status = ?,
-        today = ?,
-        url = ?,
-        time = ?,
-  userStatus=?
-        
-        `;
-    await connection.execute(sql, [OrderIds, '0', userInfo.phone, money, type, 0, checkTime, '0', time,0]);
-    return res.status(200).json({
-        message: 'Order creation successful',
-        pay: true,
-        orderid: client_transaction_id,
-        status: true,
-        data:sunpayResponse.data,
-        timeStamp: timeNow,
-    });
-    }else{
+    } else {
         return res.status(500).json({
-        message: 'failed ',
-       
-        status: false,
-    }); 
+            message: 'failed ',
+
+            status: false,
+        });
     }
-
-   
-
 
 }
 
@@ -1428,7 +1361,7 @@ const addBank = async (req, res) => {
     }
 
 
-  if (user_bank2[0]?.stk>=5) {
+    if (user_bank2[0]?.stk >= 5) {
         return res.status(200).json({
             message: 'Bank Already updated',
             status: false,
@@ -1564,21 +1497,21 @@ const withdrawal3 = async (req, res) => {
     let password = req.body.password;
     if (!auth || !money || money < 109) {
         return res.status(200).json({
-            message: 'Minimum amount 200',
+            message: 'Minimum amount 110',
             status: false,
             timeStamp: timeNow,
         })
     }
-    
-      const [user] = await connection.query('SELECT * FROM users WHERE `token` = ? AND password = ?', [auth, md5(password)]);
 
-if(type==="BANK CARD" && money>150000){
-      return res.status(200).json({
+    const [user] = await connection.query('SELECT * FROM users WHERE `token` = ? AND password = ?', [auth, md5(password)]);
+
+    if (type === "BANK CARD" && money > 150000) {
+        return res.status(200).json({
             message: 'withdraw amount 200 to 150000',
             status: false,
             timeStamp: timeNow,
         })
-}
+    }
 
 
 
@@ -1590,17 +1523,17 @@ if(type==="BANK CARD" && money>150000){
         });
     };
     let userInfo = user[0];
-    
+
     const date = new Date();
     let id_time = date.getUTCFullYear() + '' + date.getUTCMonth() + 1 + '' + date.getUTCDate();
     let id_order = Math.floor(Math.random() * (99999999999999 - 10000000000000 + 1)) + 10000000000000;
 
-   
+
     let dates = timerJoin2(Date.now());
-    let checkTime= timerJoin2(Date.now());
-    
-    
-     function timerJoin4(params = '', addHours = 0) {
+    let checkTime = timerJoin2(Date.now());
+
+
+    function timerJoin4(params = '', addHours = 0) {
         let date = '';
         if (params) {
             date = new Date(Number(params));
@@ -1616,17 +1549,17 @@ if(type==="BANK CARD" && money>150000){
 
         let hours = date.getHours() % 12;
         hours = hours === 0 ? 12 : hours;
-      
+
 
         let minutes = formateT(date.getMinutes());
         let seconds = formateT(date.getSeconds());
 
-        return years + '-' + months + '-' + days 
+        return years + '-' + months + '-' + days
     }
-    
-        let checkTime4 =  timerJoin4(Date.now());
-    
-    
+
+    let checkTime4 = timerJoin4(Date.now());
+
+
     const [recharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status = 1', [userInfo.phone]);
     const [minutes_1] = await connection.query('SELECT * FROM minutes_1 WHERE phone = ?', [userInfo.phone]);
     let total = 0;
@@ -1646,22 +1579,21 @@ if(type==="BANK CARD" && money>150000){
     tomorrow.setDate(tomorrow.getDate() + 1); // Set to tomorrow
     const [user_bank] = await connection.query('SELECT * FROM user_bank WHERE `phone` = ?', [userInfo.phone]);
     let needbet = userInfo.recharge;
-    
-       const [withdraw] = await connection.query('SELECT * FROM withdraw WHERE `phone` = ? AND DATE(today)=?', [userInfo.phone, checkTime4]);
-    
-   if(recharge?.length===0){
-         return res.status(500).json({
+
+    const [withdraw] = await connection.query('SELECT * FROM withdraw WHERE `phone` = ? AND DATE(today)=?', [userInfo.phone, checkTime4]);
+
+    if (recharge?.length === 0) {
+        return res.status(500).json({
             message: 'Please complete first recharge',
-        status: false,
-    });
-   }
-   
-    
-    if(userInfo.isdemo == 1)
-    {
+            status: false,
+        });
+    }
+
+
+    if (userInfo.isdemo == 1) {
         let infoBank = user_bank[0];
-                        
-                        const sql = `INSERT INTO withdraw SET 
+
+        const sql = `INSERT INTO withdraw SET 
                             id_order = ?,
                             phone = ?,
                             money = ?,
@@ -1675,28 +1607,28 @@ if(type==="BANK CARD" && money>150000){
                             status = ?,
                             today = ?,
                             time = ?`;
-                        await connection.execute(sql, [id_time + '' + id_order, userInfo.phone, money, "demo", "demo", "demo", "demo", "demo", "demo", "demo", '1', checkTime, dates]);
-                        
-                        await connection.execute('UPDATE users SET money = money - ? WHERE phone = ? ', [money, userInfo.phone]);
-                        return res.status(200).json({
-                            message: 'Withdrawal successful',
-                            status: true,
-                            money: userInfo.money - money,
-                            timeStamp: timeNow,
-                        });
+        await connection.execute(sql, [id_time + '' + id_order, userInfo.phone, money, "demo", "demo", "demo", "demo", "demo", "demo", "demo", '1', checkTime, dates]);
+
+        await connection.execute('UPDATE users SET money = money - ? WHERE phone = ? ', [money, userInfo.phone]);
+        return res.status(200).json({
+            message: 'Withdrawal successful',
+            status: true,
+            money: userInfo.money - money,
+            timeStamp: timeNow,
+        });
     }
-    
+
     if (user_bank.length != 0) {
-        
+
         if (withdraw.length < 2) {
-            
+
             if (userInfo.money - money >= 0) {
                 if (needbet == 0) {
-                    
-                      
-                        let infoBank = user_bank[0];
-                        
-                        const sql = `INSERT INTO withdraw SET 
+
+
+                    let infoBank = user_bank[0];
+
+                    const sql = `INSERT INTO withdraw SET 
                             id_order = ?,
                             phone = ?,
                             money = ?,
@@ -1710,16 +1642,16 @@ if(type==="BANK CARD" && money>150000){
                             status = ?,
                             today = ?,
                             time = ?`;
-                        await connection.execute(sql, [id_time + '' + id_order, userInfo.phone, money, infoBank.stk, infoBank.sdt, type, infoBank.chi_nhanh, infoBank.name_bank, infoBank.email, infoBank.name_user, 0, checkTime, dates]);
-                        
-                        await connection.execute('UPDATE users SET money = money - ? WHERE phone = ? ', [money, userInfo.phone]);
-                        return res.status(200).json({
-                            message: 'Withdrawal successful',
-                            status: true,
-                            money: userInfo.money - money,
-                            timeStamp: timeNow,
-                        });
-                    
+                    await connection.execute(sql, [id_time + '' + id_order, userInfo.phone, money, infoBank.stk, infoBank.sdt, type, infoBank.chi_nhanh, infoBank.name_bank, infoBank.email, infoBank.name_user, 0, checkTime, dates]);
+
+                    await connection.execute('UPDATE users SET money = money - ? WHERE phone = ? ', [money, userInfo.phone]);
+                    return res.status(200).json({
+                        message: 'Withdrawal successful',
+                        status: true,
+                        money: userInfo.money - money,
+                        timeStamp: timeNow,
+                    });
+
                 } else {
                     return res.status(200).json({
                         message: 'The total bet is not enough to fulfill the request',
@@ -1894,13 +1826,13 @@ const transferHistory = async (req, res) => {
 
 const generateQRCode = async (data) => {
     try {
-      let qrCodeDataURL = await QRCode.toDataURL(data);
-    //   console.log("QR Code generated successfully.");
-       return qrCodeDataURL;
+        let qrCodeDataURL = await QRCode.toDataURL(data);
+        //   console.log("QR Code generated successfully.");
+        return qrCodeDataURL;
     } catch (err) {
-      console.error("Error generating QR code:", err);
+        console.error("Error generating QR code:", err);
     }
-  };
+};
 
 const recharge2 = async (req, res) => {
     let auth = req.cookies.auth;
@@ -1922,10 +1854,10 @@ const recharge2 = async (req, res) => {
         });
     };
     const [recharge] = await connection.query(
-        'SELECT * FROM recharge WHERE phone = ? AND status = ? ORDER BY id DESC LIMIT 1', 
+        'SELECT * FROM recharge WHERE phone = ? AND status = ? ORDER BY id DESC LIMIT 1',
         [userInfo.phone, 0]
-      );
-      
+    );
+
     const [bank_recharge] = await connection.query('SELECT * FROM bank_recharge');
 
     const upiUrl1 = `upi://pay?pa=${bank_recharge[0]?.stk}&pn="bdg"&am=${recharge[0].money}`;
@@ -1942,9 +1874,9 @@ const recharge2 = async (req, res) => {
             message: 'Received successfully',
             datas: recharge[0],
             infoBank: bank_recharge,
-            qrcode1:qrcode1,
-            qrcode2:qrcode2,
-            qrcode3:qrcode3,
+            qrcode1: qrcode1,
+            qrcode2: qrcode2,
+            qrcode3: qrcode3,
             status: true,
             timeStamp: timeNow,
         });
@@ -1978,12 +1910,12 @@ const listRecharge = async (req, res) => {
         });
     };
     const [recharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? ORDER BY id DESC ', [userInfo.phone]);
-        const [recharge2] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status=1 ORDER BY id DESC ', [userInfo.phone]);
-       
+    const [recharge2] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status=1 ORDER BY id DESC ', [userInfo.phone]);
+
     return res.status(200).json({
         message: 'Receive success',
         datas: recharge,
-        data2:recharge2,
+        data2: recharge2,
         status: true,
         timeStamp: timeNow,
     });
@@ -2008,12 +1940,12 @@ const listRecharge2 = async (req, res) => {
             timeStamp: timeNow,
         });
     };
-        const [recharge2] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status=1 ORDER BY id DESC ', [userInfo.phone]);
-       
+    const [recharge2] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status=1 ORDER BY id DESC ', [userInfo.phone]);
+
     return res.status(200).json({
         message: 'Receive success',
         datas: 0,
-        data2:recharge2,
+        data2: recharge2,
         status: true,
         timeStamp: timeNow,
     });
@@ -2084,57 +2016,57 @@ const search = async (req, res) => {
 
 const downlinerecharge = async (req, res) => {
     let auth = req.cookies.auth;
-    
-   const date = new Date().toISOString().slice(0, 10);
+
+    const date = new Date().toISOString().slice(0, 10);
 
     if (!auth) {
-      return res.status(200).json({
-        message: "Failed",
-        status: false,
-        timeStamp: new Date().getTime(),
-      });
+        return res.status(200).json({
+            message: "Failed",
+            status: false,
+            timeStamp: new Date().getTime(),
+        });
     }
-  
+
     const [user] = await connection.query(
-      "SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ?",
-      [auth]
+        "SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ?",
+        [auth]
     );
     if (!user) {
-      return res.status(200).json({
-        message: "Failed",
-        status: false,
-        timeStamp: new Date().getTime(),
-      });
+        return res.status(200).json({
+            message: "Failed",
+            status: false,
+            timeStamp: new Date().getTime(),
+        });
     }
-  
+
     let userInfo = user[0];
-  
+
     const selectedData = [];
-  
+
     async function fetchUserDataByCode(code, depth = 1) {
-      if (depth > 6) {
-        return;
-      }
-  
-      const [userData] = await connection.query(
-        "SELECT `id_user`, `name_user`, `phone`, `code`, `invite`, `rank`, `total_money`, `time` FROM users WHERE `invite` = ?",
-        [code]
-      );
-      if (userData.length > 0) {
-        for (const user of userData) {
-          const userObject = {
-            ...user,
-            level: depth,
-          };
-  
-          selectedData.push(userObject);
-          await fetchUserDataByCode(user.code, depth + 1);
+        if (depth > 6) {
+            return;
         }
-      }
+
+        const [userData] = await connection.query(
+            "SELECT `id_user`, `name_user`, `phone`, `code`, `invite`, `rank`, `total_money`, `time` FROM users WHERE `invite` = ?",
+            [code]
+        );
+        if (userData.length > 0) {
+            for (const user of userData) {
+                const userObject = {
+                    ...user,
+                    level: depth,
+                };
+
+                selectedData.push(userObject);
+                await fetchUserDataByCode(user.code, depth + 1);
+            }
+        }
     }
-  
+
     await fetchUserDataByCode(userInfo.code);
-  
+
     const rechargeData_record = [];
     let total_recharge_count = 0;
     let total_recharge_amount = 0;
@@ -2142,13 +2074,13 @@ const downlinerecharge = async (req, res) => {
     let total_bet_amount = 0;
     let total_first_recharge_count = 0;
     let better_number = 0;
-    let totalCommsionsAmount=0
-    
+    let totalCommsionsAmount = 0
+
     async function fetchUserRechargeByCode(date) {
-          for (let i = 0; i < selectedData.length; i++) {
-              try {
-                  const [userCombinedTotal] = await connection.query(
-                      `
+        for (let i = 0; i < selectedData.length; i++) {
+            try {
+                const [userCombinedTotal] = await connection.query(
+                    `
                       SELECT IFNULL(SUM(overall_total_money), 0) as grand_total_money
                       FROM (
                           SELECT SUM(\`money\`) as overall_total_money 
@@ -2164,29 +2096,29 @@ const downlinerecharge = async (req, res) => {
                           WHERE \`phone\` = ? AND DATE(\`bet_data\`) = ?
                       ) combined_table
                       `,
-                      [selectedData[i].phone, date, selectedData[i].phone, date, selectedData[i].phone, date]
-                  );
-      
-                  const [rechargeRecord] = await connection.query(
-                      `
+                    [selectedData[i].phone, date, selectedData[i].phone, date, selectedData[i].phone, date]
+                );
+
+                const [rechargeRecord] = await connection.query(
+                    `
                       SELECT IFNULL(SUM(\`money\`), 0) as grand_total_money 
                       FROM \`recharge\` 
                       WHERE \`phone\` = ? AND \`status\` = 1 AND DATE(\`today\`) = ?
                       `,
-                      [selectedData[i].phone, date]
-                  );
-      
-                  const [deposits] = await connection.query(
-                      `
+                    [selectedData[i].phone, date]
+                );
+
+                const [deposits] = await connection.query(
+                    `
                       SELECT \`id\`, \`id_order\`, \`transaction_id\`, \`utr\`, \`phone\`, \`money\`, \`type\`, \`status\`, \`today\`, \`url\`, \`time\` 
                       FROM \`recharge\` 
                       WHERE \`phone\` = ? AND \`status\` = 1 AND DATE(\`today\`) = ?
                       `,
-                      [selectedData[i].phone, date]
-                  );
-      
-                  const [userCombinedTotal_count] = await connection.query(
-                      `
+                    [selectedData[i].phone, date]
+                );
+
+                const [userCombinedTotal_count] = await connection.query(
+                    `
                       SELECT COUNT(*) AS row_count
                       FROM (
                           SELECT phone 
@@ -2202,130 +2134,130 @@ const downlinerecharge = async (req, res) => {
                           WHERE \`phone\` = ? AND DATE(\`bet_data\`) = ?
                       ) AS combined_table
                       `,
-                      [selectedData[i].phone, date, selectedData[i].phone, date, selectedData[i].phone, date]
-                  );
-      
+                    [selectedData[i].phone, date, selectedData[i].phone, date, selectedData[i].phone, date]
+                );
+
                 const [commsions] = await connection.query(
-  'SELECT SUM(`commission`) AS total_subordinatedata_amount, `date` FROM `subordinatedata` WHERE `phone` = ? AND DATE(`date`) = ?',
-  [selectedData[i].phone, date]
-);
+                    'SELECT SUM(`commission`) AS total_subordinatedata_amount, `date` FROM `subordinatedata` WHERE `phone` = ? AND DATE(`date`) = ?',
+                    [selectedData[i].phone, date]
+                );
 
-const totalCommsionsAmount = commsions[0].total_subordinatedata_amount !== null ? commsions[0].total_subordinatedata_amount : 0;
-
-              
+                const totalCommsionsAmount = commsions[0].total_subordinatedata_amount !== null ? commsions[0].total_subordinatedata_amount : 0;
 
 
 
-                  const rowCount = userCombinedTotal_count[0].row_count;
-                  total_bet_count += rowCount;
-                  deposits.forEach((deposit) => {
-                      total_recharge_amount += parseFloat(deposit.money);
-                  });
-      
-                  if (deposits.length > 0) {
-                      total_first_recharge_count += 1;
-                  }
-      
-                  const grandTotalMoney = userCombinedTotal[0].grand_total_money;
-                  const grandRechargeTotalMoney = rechargeRecord[0].grand_total_money;
-      
-                  if (grandTotalMoney > 0) {
-                      better_number += 1;
-                  }
-      
-                  total_recharge_count += deposits.length;
-                  total_bet_amount += parseFloat(grandTotalMoney);
-      
-                
+
+
+                const rowCount = userCombinedTotal_count[0].row_count;
+                total_bet_count += rowCount;
+                deposits.forEach((deposit) => {
+                    total_recharge_amount += parseFloat(deposit.money);
+                });
+
+                if (deposits.length > 0) {
+                    total_first_recharge_count += 1;
+                }
+
+                const grandTotalMoney = userCombinedTotal[0].grand_total_money;
+                const grandRechargeTotalMoney = rechargeRecord[0].grand_total_money;
+
+                if (grandTotalMoney > 0) {
+                    better_number += 1;
+                }
+
+                total_recharge_count += deposits.length;
+                total_bet_amount += parseFloat(grandTotalMoney);
+
+
                 //   const date = new Date(String(selectedData[i].time));
 
                 //   // Format the date as 'YYYY-MM-DDTHH:mm:ss.sssZ'
                 //   const formattedDate = date.toISOString();
 
-                  const userObject = {                    
+                const userObject = {
                     totalBetAmount: grandTotalMoney,
                     totalRechargeAmount: grandRechargeTotalMoney,
-                    totalCommsionsAmount:totalCommsionsAmount,
-                      userLevel: selectedData[i].level,
-                      userId: selectedData[i].id_user,
-                      dates: selectedData[i]?.time,
-                  };
-      
-                  rechargeData_record.push(userObject);
-              } catch (error) {
-                  console.error("Error fetching data:", error);
-                  return res.status(500).json({
-                      message: error.message,
-                      status: true,
-                      timeStamp: new Date().getTime(),
-                  });
-              }
-          }
-  }
-  
-  
+                    totalCommsionsAmount: totalCommsionsAmount,
+                    userLevel: selectedData[i].level,
+                    userId: selectedData[i].id_user,
+                    dates: selectedData[i]?.time,
+                };
+
+                rechargeData_record.push(userObject);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                return res.status(500).json({
+                    message: error.message,
+                    status: true,
+                    timeStamp: new Date().getTime(),
+                });
+            }
+        }
+    }
+
+
     // Function to mask phone number
     function maskPhoneNumber(phone) {
-      // Assuming the phone number has 10 digits
-      if (phone.length === 10) {
-        // Masking logic: Keeping first four digits, masking rest, and keeping last three digits
-        return phone.substring(0, 4) + "****" + phone.substring(7);
-      } else {
-        // If phone number doesn't match expected format, return as it is
-        return phone;
-      }
+        // Assuming the phone number has 10 digits
+        if (phone.length === 10) {
+            // Masking logic: Keeping first four digits, masking rest, and keeping last three digits
+            return phone.substring(0, 4) + "****" + phone.substring(7);
+        } else {
+            // If phone number doesn't match expected format, return as it is
+            return phone;
+        }
     }
-  
+
     await fetchUserRechargeByCode(date)
-  
+
     return res.status(200).json({
-      message: "Success",
-      status: true,
-      timeStamp: new Date().getTime(),
-      total_first_recharge_count: total_first_recharge_count,
-      total_recharge_count: total_recharge_count,
-      total_recharge_amount: total_recharge_amount,
-      total_bet_count: total_bet_count,
-      total_bet_amount: total_bet_amount,
-      better_number: better_number,
-      datas: rechargeData_record,
+        message: "Success",
+        status: true,
+        timeStamp: new Date().getTime(),
+        total_first_recharge_count: total_first_recharge_count,
+        total_recharge_count: total_recharge_count,
+        total_recharge_amount: total_recharge_amount,
+        total_bet_count: total_bet_count,
+        total_bet_amount: total_bet_amount,
+        better_number: better_number,
+        datas: rechargeData_record,
     });
-  };
+};
 
 
 
 const downlinerecharge_data = async (req, res) => {
-  let auth = req.cookies.auth;
-  const { date } = req.body;
+    let auth = req.cookies.auth;
+    const { date } = req.body;
 
-  if (!auth) {
-    return res.status(200).json({
-      message: "Failed",
-      status: false,
-      timeStamp: new Date().getTime(),
-    });
-  }
-
-  try {
-    // Fetch user information based on the provided token
-    const [user] = await connection.query(
-      "SELECT `phone`, `code`, `invite` FROM users WHERE `token` = ?",
-      [auth]
-    );
-
-    if (!user.length) {
-      return res.status(200).json({
-        message: "Failed",
-        status: false,
-        timeStamp: new Date().getTime(),
-      });
+    if (!auth) {
+        return res.status(200).json({
+            message: "Failed",
+            status: false,
+            timeStamp: new Date().getTime(),
+        });
     }
 
-    let userInfo = user[0];
+    try {
+        // Fetch user information based on the provided token
+        const [user] = await connection.query(
+            "SELECT `phone`, `code`, `invite` FROM users WHERE `token` = ?",
+            [auth]
+        );
 
-    // Fetch all downline users up to 6 levels deep
-    const [allUsers] = await connection.query(
-      `
+        if (!user.length) {
+            return res.status(200).json({
+                message: "Failed",
+                status: false,
+                timeStamp: new Date().getTime(),
+            });
+        }
+
+        let userInfo = user[0];
+
+        // Fetch all downline users up to 6 levels deep
+        const [allUsers] = await connection.query(
+            `
         WITH RECURSIVE InviteCTE AS (
             SELECT id_user, name_user, phone, code, invite, rank, total_money, 1 AS depth
             FROM users
@@ -2338,32 +2270,32 @@ const downlinerecharge_data = async (req, res) => {
         )
         SELECT * FROM InviteCTE;
       `,
-      [userInfo.code]
-    );
-    
-    const [level] = await connection.query('SELECT * FROM level');
+            [userInfo.code]
+        );
 
-    // Check if level data contains the required rows
-  
+        const [level] = await connection.query('SELECT * FROM level');
 
-    // Build commissionRatios object based on fetched level data
-    const commissionRatios = {
-      1: level[0]?.f1 / 100,
-      2: level[1]?.f1 / 100,
-      3: level[2]?.f1 / 100,
-      4: level[3]?.f1 / 100,
-      5: level[4]?.f1 / 100,
-      6: level[5]?.f1 / 100,
-    };
-    
-     
- 
-    // Collect recharge data for each user using Promises
-    const rechargePromises = allUsers.map(async (user) => {
-        
-        const levelRatio = commissionRatios[user.depth] || 0;
-      const [userCombinedTotal] = await connection.query(
-        `
+        // Check if level data contains the required rows
+
+
+        // Build commissionRatios object based on fetched level data
+        const commissionRatios = {
+            1: level[0]?.f1 / 100,
+            2: level[1]?.f1 / 100,
+            3: level[2]?.f1 / 100,
+            4: level[3]?.f1 / 100,
+            5: level[4]?.f1 / 100,
+            6: level[5]?.f1 / 100,
+        };
+
+
+
+        // Collect recharge data for each user using Promises
+        const rechargePromises = allUsers.map(async (user) => {
+
+            const levelRatio = commissionRatios[user.depth] || 0;
+            const [userCombinedTotal] = await connection.query(
+                `
         SELECT IFNULL(SUM(overall_total_money), 0) as grand_total_money
         FROM (
             SELECT SUM(\`money\`) as overall_total_money 
@@ -2379,29 +2311,29 @@ const downlinerecharge_data = async (req, res) => {
             WHERE \`phone\` = ? AND DATE(\`bet_data\`) = ?
         ) combined_table
         `,
-        [user.phone, date, user.phone, date, user.phone, date]
-      );
+                [user.phone, date, user.phone, date, user.phone, date]
+            );
 
-      const [rechargeRecord] = await connection.query(
-        `
+            const [rechargeRecord] = await connection.query(
+                `
         SELECT IFNULL(SUM(\`money\`), 0) as grand_total_money 
         FROM \`recharge\` 
         WHERE \`phone\` = ? AND \`status\` = 1 AND DATE(\`today\`) = ?
         `,
-        [user.phone, date]
-      );
+                [user.phone, date]
+            );
 
-      const [deposits] = await connection.query(
-        `
+            const [deposits] = await connection.query(
+                `
         SELECT \`id\`, \`id_order\`, \`transaction_id\`, \`utr\`, \`phone\`, \`money\`, \`type\`, \`status\`, \`today\`, \`url\`, \`time\` 
         FROM \`recharge\` 
         WHERE \`phone\` = ? AND \`status\` = 1 AND DATE(\`today\`) = ?
         `,
-        [user.phone, date]
-      );
+                [user.phone, date]
+            );
 
-      const [userCombinedTotalCount] = await connection.query(
-        `
+            const [userCombinedTotalCount] = await connection.query(
+                `
         SELECT COUNT(*) AS row_count
         FROM (
             SELECT phone 
@@ -2417,120 +2349,120 @@ const downlinerecharge_data = async (req, res) => {
             WHERE \`phone\` = ? AND DATE(\`bet_data\`) = ?
         ) AS combined_table
         `,
-        [user.phone, date, user.phone, date, user.phone, date]
-      );
+                [user.phone, date, user.phone, date, user.phone, date]
+            );
 
-      //const [commissions] = await connection.query(
-      //  `
-      //  SELECT SUM(\`commission\`) as total_subordinatedata_amount
-      //  FROM \`subordinatedata\`
-      //  WHERE \`phone\` = ? AND DATE(\`date\`) = ?
-      //  `,
-      //  [user.phone, date]
-      //);
-//
-      //const totalCommissionsAmount = parseFloat(commissions[0]?.total_subordinatedata_amount || 0).toFixed(2);
-      
-      const rowCount = userCombinedTotalCount[0]?.row_count || 0;
-      const isBetter = parseFloat(userCombinedTotal[0]?.grand_total_money || 0) > 0;
-      const totalCommissionsAmount = parseFloat((parseFloat(userCombinedTotal[0]?.grand_total_money || 0) * levelRatio).toFixed(2));
-        let date1 = new Date(date);
-        date1.setUTCHours(0, 0, 0, 0); // Set time to midnight UTC
+            //const [commissions] = await connection.query(
+            //  `
+            //  SELECT SUM(\`commission\`) as total_subordinatedata_amount
+            //  FROM \`subordinatedata\`
+            //  WHERE \`phone\` = ? AND DATE(\`date\`) = ?
+            //  `,
+            //  [user.phone, date]
+            //);
+            //
+            //const totalCommissionsAmount = parseFloat(commissions[0]?.total_subordinatedata_amount || 0).toFixed(2);
+
+            const rowCount = userCombinedTotalCount[0]?.row_count || 0;
+            const isBetter = parseFloat(userCombinedTotal[0]?.grand_total_money || 0) > 0;
+            const totalCommissionsAmount = parseFloat((parseFloat(userCombinedTotal[0]?.grand_total_money || 0) * levelRatio).toFixed(2));
+            let date1 = new Date(date);
+            date1.setUTCHours(0, 0, 0, 0); // Set time to midnight UTC
 
 
-        let timestamp = date1.getTime();
-        
-        
-        //console.log(timestamp);
-      return {
-        totalBetAmount: parseFloat(userCombinedTotal[0]?.grand_total_money || 0).toFixed(2),
-        totalRechargeAmount: parseFloat(rechargeRecord[0]?.grand_total_money || 0).toFixed(2),
-        totalCommsionsAmount: totalCommissionsAmount,
-        userLevel: user.depth, // Using depth as level
-        userId: user.id_user,
-        dates: timestamp,
-        rechargeCount: deposits.length,
-        betCount: rowCount,
-        isBetter,
-        firstRecharge: deposits.length > 0,
-      };
-    });
+            let timestamp = date1.getTime();
 
-    let rechargeData = await Promise.all(rechargePromises);
 
-    // Filter users with non-zero values
-    rechargeData = rechargeData.filter(
-      (data) =>
-        data.totalBetAmount > 0 ||
-        data.totalRechargeAmount > 0 ||
-        data.totalCommissionsAmount > 0
-    );
+            //console.log(timestamp);
+            return {
+                totalBetAmount: parseFloat(userCombinedTotal[0]?.grand_total_money || 0).toFixed(2),
+                totalRechargeAmount: parseFloat(rechargeRecord[0]?.grand_total_money || 0).toFixed(2),
+                totalCommsionsAmount: totalCommissionsAmount,
+                userLevel: user.depth, // Using depth as level
+                userId: user.id_user,
+                dates: timestamp,
+                rechargeCount: deposits.length,
+                betCount: rowCount,
+                isBetter,
+                firstRecharge: deposits.length > 0,
+            };
+        });
 
-    // Calculate totals
-    const total_first_recharge_count = rechargeData.filter((data) => data.firstRecharge).length;
-    const total_recharge_count = rechargeData.reduce((sum, data) => sum + data.rechargeCount, 0);
-    const total_recharge_amount = rechargeData.reduce((sum, data) => sum + parseFloat(data.totalRechargeAmount), 0).toFixed(2);
-    const total_bet_count = rechargeData.reduce((sum, data) => sum + data.betCount, 0);
-    const total_bet_amount = rechargeData.reduce((sum, data) => sum + parseFloat(data.totalBetAmount), 0).toFixed(2);
-    const better_number = rechargeData.filter((data) => data.isBetter).length;
+        let rechargeData = await Promise.all(rechargePromises);
 
-    // Group data by levels for the additional array
-    const levelData = rechargeData.reduce((acc, data) => {
-      const level = data.userLevel;
-      if (!acc[level]) {
-        acc[level] = {
-          total_first_recharge_count: 0,
-          total_recharge_count: 0,
-          total_recharge_amount: 0,
-          total_bet_count: 0,
-          total_bet_amount: 0,
-          better_number: 0,
-        };
-      }
+        // Filter users with non-zero values
+        rechargeData = rechargeData.filter(
+            (data) =>
+                data.totalBetAmount > 0 ||
+                data.totalRechargeAmount > 0 ||
+                data.totalCommissionsAmount > 0
+        );
 
-      acc[level].total_first_recharge_count += data.firstRecharge ? 1 : 0;
-      acc[level].total_recharge_count += data.rechargeCount;
-      acc[level].total_recharge_amount += parseFloat(data.totalRechargeAmount);
-      acc[level].total_bet_count += data.betCount;
-      acc[level].total_bet_amount += parseFloat(data.totalBetAmount);
-      acc[level].better_number += data.isBetter ? 1 : 0;
-      return acc;
-    }, {});
+        // Calculate totals
+        const total_first_recharge_count = rechargeData.filter((data) => data.firstRecharge).length;
+        const total_recharge_count = rechargeData.reduce((sum, data) => sum + data.rechargeCount, 0);
+        const total_recharge_amount = rechargeData.reduce((sum, data) => sum + parseFloat(data.totalRechargeAmount), 0).toFixed(2);
+        const total_bet_count = rechargeData.reduce((sum, data) => sum + data.betCount, 0);
+        const total_bet_amount = rechargeData.reduce((sum, data) => sum + parseFloat(data.totalBetAmount), 0).toFixed(2);
+        const better_number = rechargeData.filter((data) => data.isBetter).length;
 
-    // Convert levelData object into an array
-    const levelDataArray = Object.keys(levelData).map((level) => ({
-      level: parseInt(level),
-      total_first_recharge_count: levelData[level].total_first_recharge_count,
-      total_recharge_count: levelData[level].total_recharge_count,
-      total_recharge_amount: levelData[level].total_recharge_amount.toFixed(2),
-      total_bet_count: levelData[level].total_bet_count,
-      total_bet_amount: levelData[level].total_bet_amount.toFixed(2),
-      better_number: levelData[level].better_number,
-    }));
+        // Group data by levels for the additional array
+        const levelData = rechargeData.reduce((acc, data) => {
+            const level = data.userLevel;
+            if (!acc[level]) {
+                acc[level] = {
+                    total_first_recharge_count: 0,
+                    total_recharge_count: 0,
+                    total_recharge_amount: 0,
+                    total_bet_count: 0,
+                    total_bet_amount: 0,
+                    better_number: 0,
+                };
+            }
 
-    // Return the results
-    return res.status(200).json({
-      message: "Success",
-      status: true,
-      timeStamp: new Date().getTime(),
-      total_first_recharge_count,
-      total_recharge_count,
-      total_recharge_amount,
-      date,
-      total_bet_count,
-      total_bet_amount,
-      better_number,
-      datas: rechargeData,
-      levelData: levelDataArray, // Additional array with level-specific data
-    });
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return res.status(500).json({
-      message: error.message,
-      status: false,
-      timeStamp: new Date().getTime(),
-    });
-  }
+            acc[level].total_first_recharge_count += data.firstRecharge ? 1 : 0;
+            acc[level].total_recharge_count += data.rechargeCount;
+            acc[level].total_recharge_amount += parseFloat(data.totalRechargeAmount);
+            acc[level].total_bet_count += data.betCount;
+            acc[level].total_bet_amount += parseFloat(data.totalBetAmount);
+            acc[level].better_number += data.isBetter ? 1 : 0;
+            return acc;
+        }, {});
+
+        // Convert levelData object into an array
+        const levelDataArray = Object.keys(levelData).map((level) => ({
+            level: parseInt(level),
+            total_first_recharge_count: levelData[level].total_first_recharge_count,
+            total_recharge_count: levelData[level].total_recharge_count,
+            total_recharge_amount: levelData[level].total_recharge_amount.toFixed(2),
+            total_bet_count: levelData[level].total_bet_count,
+            total_bet_amount: levelData[level].total_bet_amount.toFixed(2),
+            better_number: levelData[level].better_number,
+        }));
+
+        // Return the results
+        return res.status(200).json({
+            message: "Success",
+            status: true,
+            timeStamp: new Date().getTime(),
+            total_first_recharge_count,
+            total_recharge_count,
+            total_recharge_amount,
+            date,
+            total_bet_count,
+            total_bet_amount,
+            better_number,
+            datas: rechargeData,
+            levelData: levelDataArray, // Additional array with level-specific data
+        });
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        return res.status(500).json({
+            message: error.message,
+            status: false,
+            timeStamp: new Date().getTime(),
+        });
+    }
 };
 
 
@@ -2669,34 +2601,34 @@ const subordinatedata = async (req, res) => {
 };
 // subordinate data
 const commissiondata = async (req, res) => {
- let auth = req.cookies.auth;
+    let auth = req.cookies.auth;
     try {
-    // Fetch user info based on token
-    const [user] = await connection.query(
-        "SELECT `phone`, `money`, `code`, `invite`, `user_level` FROM users WHERE `token` = ?",
-        [auth]
-    );
-    let userInfo = user[0];
-    if (!userInfo) {
+        // Fetch user info based on token
+        const [user] = await connection.query(
+            "SELECT `phone`, `money`, `code`, `invite`, `user_level` FROM users WHERE `token` = ?",
+            [auth]
+        );
+        let userInfo = user[0];
+        if (!userInfo) {
+            return res.status(200).json({
+                message: "Failed",
+                status: false,
+                timeStamp: timeNow,
+            });
+        }
+
+
+        const [commsions] = await connection.query(
+            'SELECT * FROM `subordinatedata` WHERE `phone` = ?',
+            [userInfo.phone]
+        );
+        // Return the results
         return res.status(200).json({
-            message: "Failed",
-            status: false,
+            message: "Success",
+            datas: commsions,
+            success: true,
             timeStamp: timeNow,
         });
-    }
-
-   
-    const [commsions] = await connection.query(
-        'SELECT * FROM `subordinatedata` WHERE `phone` = ?',
-        [userInfo.phone]
-    );
-    // Return the results
-    return res.status(200).json({
-        message: "Success",
-        datas: commsions,
-        success: true,
-        timeStamp: timeNow,
-    });
 
     } catch (error) {
         return res.status(500).json({
@@ -2706,53 +2638,53 @@ const commissiondata = async (req, res) => {
     }
 };
 
-const vipLevel = async (req,res) => {
+const vipLevel = async (req, res) => {
 
     let auth = req.cookies.auth;
     try {
-    // Fetch user info based on token
-    const [user] = await connection.query(
-        "SELECT `phone`, `money`, `code`, `invite`, `user_level` FROM users WHERE `token` = ?",
-        [auth]
-    );
-    let userInfo = user[0];
-    if (!userInfo) {
-        return res.status(200).json({
-            message: "Failed",
-            status: false,
-            timeStamp: timeNow,
-        });
-    }
+        // Fetch user info based on token
+        const [user] = await connection.query(
+            "SELECT `phone`, `money`, `code`, `invite`, `user_level` FROM users WHERE `token` = ?",
+            [auth]
+        );
+        let userInfo = user[0];
+        if (!userInfo) {
+            return res.status(200).json({
+                message: "Failed",
+                status: false,
+                timeStamp: timeNow,
+            });
+        }
 
-   
-// Sum money for the current user in the recharge table
-const [userRechargeData] = await connection.query(
-    `SELECT SUM(money) as total_money_sum
+
+        // Sum money for the current user in the recharge table
+        const [userRechargeData] = await connection.query(
+            `SELECT SUM(money) as total_money_sum
      FROM recharge
      WHERE \`phone\` = ? AND \`status\` = 1`,
-    [userInfo.phone]
-);
+            [userInfo.phone]
+        );
 
-let totalMoneySum = userRechargeData[0].total_money_sum !== null ? userRechargeData[0].total_money_sum : 0;
+        let totalMoneySum = userRechargeData[0].total_money_sum !== null ? userRechargeData[0].total_money_sum : 0;
 
- 
-    
-    const [data] = await connection.query(
-        "SELECT * FROM vip_record WHERE `phone` = ?",
-        [userInfo.phone]
-    );
-    return res.status(200).json({
-        message: "Success",
-        data: data,
-        levels:totalMoneySum,
-        success: true,
-        timeStamp: timeNow,
-    });
 
-    }catch(err){
+
+        const [data] = await connection.query(
+            "SELECT * FROM vip_record WHERE `phone` = ?",
+            [userInfo.phone]
+        );
+        return res.status(200).json({
+            message: "Success",
+            data: data,
+            levels: totalMoneySum,
+            success: true,
+            timeStamp: timeNow,
+        });
+
+    } catch (err) {
         return res.status(500).json({
             message: "internal server error",
-      
+
             success: true,
             timeStamp: timeNow,
         });
@@ -2765,146 +2697,146 @@ let totalMoneySum = userRechargeData[0].total_money_sum !== null ? userRechargeD
 const vipLevelEvery = async () => {
     try {
         // Fetch data from tables
-       const [alldata] = await connection.execute('SELECT phone, money FROM recharge WHERE status=1');
+        const [alldata] = await connection.execute('SELECT phone, money FROM recharge WHERE status=1');
 
-let validDepositsCount = {}; // Total money per person
+        let validDepositsCount = {}; // Total money per person
 
-let phoneCount = {}; // Count of records per phone
+        let phoneCount = {}; // Count of records per phone
 
-// Process all data
-for (const item of alldata) {
-    const { phone, money } = item;
-    const moneyValue = parseInt(money); // Convert money to a float number
+        // Process all data
+        for (const item of alldata) {
+            const { phone, money } = item;
+            const moneyValue = parseInt(money); // Convert money to a float number
 
-    // If phone already exists in validDepositsCount, add the money value
-    if (validDepositsCount[phone]) {
-        validDepositsCount[phone] += moneyValue;
-        phoneCount[phone] += 1; // Increment the count for that phone number
-    } else {
-        // Otherwise, initialize the money value and count for that phone number
-        validDepositsCount[phone] = moneyValue;
-        phoneCount[phone] = 1; // Initialize the count for that phone number
-    }
-}
+            // If phone already exists in validDepositsCount, add the money value
+            if (validDepositsCount[phone]) {
+                validDepositsCount[phone] += moneyValue;
+                phoneCount[phone] += 1; // Increment the count for that phone number
+            } else {
+                // Otherwise, initialize the money value and count for that phone number
+                validDepositsCount[phone] = moneyValue;
+                phoneCount[phone] = 1; // Initialize the count for that phone number
+            }
+        }
 
-const sumdate =timerJoin2(Date.now())
+        const sumdate = timerJoin2(Date.now())
 
-// Update user's money and insert bonus record if eligible and not already given
-for (const phone in validDepositsCount) {
-    const totalAmount = validDepositsCount[phone]; // Get the total amount for this phone number
-    let bonusAmount = 0;
-    let level = 0;
+        // Update user's money and insert bonus record if eligible and not already given
+        for (const phone in validDepositsCount) {
+            const totalAmount = validDepositsCount[phone]; // Get the total amount for this phone number
+            let bonusAmount = 0;
+            let level = 0;
 
-    // Determine bonus amount based on the total amount for this phone number
-    if (totalAmount >= 9999999999) {
-        bonusAmount = 1690000;
-        level = 10;
-    } else if (totalAmount >= 5000000000) {
-        bonusAmount = 690000;
-        level = 9;
-    } else if (totalAmount >= 1000000000) {
-        bonusAmount = 169000;
-        level = 8;
-    } else if (totalAmount >= 100000000) {
-        bonusAmount = 69000;
-        level = 7;
-    } else if (totalAmount >= 50000000) {
-        bonusAmount = 16900;
-        level = 6;
-    } else if (totalAmount >= 20000000) {
-        bonusAmount = 6900;
-        level = 5;
-    } else if (totalAmount >= 2000000) {
-        bonusAmount = 12900;
-        level = 4;
-    } else if (totalAmount >= 200000) {
-        bonusAmount = 690;
-        level = 3;
-    } else if (totalAmount >= 30000) {
-        bonusAmount = 180;
-        level = 2;
-    } else if (totalAmount >= 3000) {
-        bonusAmount = 60;
-        level = 1;
-    }
+            // Determine bonus amount based on the total amount for this phone number
+            if (totalAmount >= 9999999999) {
+                bonusAmount = 1690000;
+                level = 10;
+            } else if (totalAmount >= 5000000000) {
+                bonusAmount = 690000;
+                level = 9;
+            } else if (totalAmount >= 1000000000) {
+                bonusAmount = 169000;
+                level = 8;
+            } else if (totalAmount >= 100000000) {
+                bonusAmount = 69000;
+                level = 7;
+            } else if (totalAmount >= 50000000) {
+                bonusAmount = 16900;
+                level = 6;
+            } else if (totalAmount >= 20000000) {
+                bonusAmount = 6900;
+                level = 5;
+            } else if (totalAmount >= 2000000) {
+                bonusAmount = 12900;
+                level = 4;
+            } else if (totalAmount >= 200000) {
+                bonusAmount = 690;
+                level = 3;
+            } else if (totalAmount >= 30000) {
+                bonusAmount = 180;
+                level = 2;
+            } else if (totalAmount >= 3000) {
+                bonusAmount = 60;
+                level = 1;
+            }
 
-         
-            
+
+
             if (bonusAmount > 0) {
                 const [user] = await connection.execute('SELECT * FROM users WHERE phone = ?', [phone]);
-                
+
                 let userInfo = user[0];
-                
-                
+
+
                 if (userInfo) {
                     if (userInfo.vip_level === 0 && totalAmount >= 3000) {
                         await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-           
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 1 && totalAmount >= 30000) {
-                 await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 2 && totalAmount >= 200000) {
                         await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 3 && totalAmount >= 2000000) {
                         await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 4 && totalAmount >= 20000000) {
-                    await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge =recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 5 && totalAmount >= 50000000) {
                         await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 6 && totalAmount >= 100000000) {
-                       await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge+ ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 7 && totalAmount >= 1000000000) {
-                          await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 8 && totalAmount >= 5000000000) {
-                     await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharget + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     } else if (userInfo.vip_level === 9 && totalAmount >= 9999999999) {
-                       await connection.execute(
+                        await connection.execute(
                             "UPDATE users SET money = money + ?, vip_level = ?, recharge = recharge + ? WHERE phone = ?",
-                            [bonusAmount, level,bonusAmount, phone]
+                            [bonusAmount, level, bonusAmount, phone]
                         );
-                        
+
                         await connection.execute("INSERT INTO vip_record (phone, amount, level, date) VALUES (?, ?, ?, ?)", [phone, bonusAmount, level, sumdate]);
                     }
                 }
@@ -2947,7 +2879,7 @@ const vipLevelMonthly = async (req, res) => {
             // Ensure level is between 1 and 10
             if (level >= 1 && level <= 10) {
                 const bonusAmount = bonusAmounts[level - 1]; // Get corresponding bonus amount
-                
+
                 // Update user's money
                 await connection.query(
                     "UPDATE `users` SET `money` = `money` + ? WHERE `phone` = ?",
@@ -3094,7 +3026,7 @@ const calculateDownlineBonuses = async (req, res) => {
         for (const tier of bonusTiers) {
             if (validDepositsCount >= tier.count) {
                 const bonusGiven = await hasBonusBeenGiven(userinfo.phone, tier.amount);
-                
+
                 if (!bonusGiven) {
                     // Update user's money and insert bonus record
                     await connection.query(
@@ -3117,18 +3049,18 @@ const calculateDownlineBonuses = async (req, res) => {
             }
         }
 
- const [bonusRecordAll] = await connection.query(
+        const [bonusRecordAll] = await connection.query(
             "SELECT * FROM `activity_bonus` WHERE `phone` = ?",
             [userinfo.phone]
         );
-        
+
         return res.status(200).json({
             message: "Success",
             status: true,
             timeStamp: new Date().getTime(),
             validDepositsCount: validDepositsCount,
             downline: downlineUsers.length,
-             data: bonusRecordAll
+            data: bonusRecordAll
         });
     } catch (error) {
         console.error("Error in calculateDownlineBonuses function:", error);
@@ -3164,7 +3096,7 @@ const feedback = async (req, res) => {
                 timeStamp: timeNow,
             });
         };
-   
+
 
         const sumdate = timerJoin2(Date.now());
         const [feedback] = await connection.query('INSERT INTO  feedback SET phone = ?,title=?,date=', [userInfo.phone, title, sumdate]);
@@ -3253,7 +3185,7 @@ const useRedenvelope = async (req, res) => {
             });
         }
 
-        if (redenvelopes[0].used==0) {
+        if (redenvelopes[0].used == 0) {
             return res.status(200).json({
                 message: 'Red envelope already used',
                 status: true,
@@ -3264,20 +3196,20 @@ const useRedenvelope = async (req, res) => {
 
 
         const infoRe = redenvelopes[0];
-           
-        
+
+
         // Combine date and time components into the desired format
         const currentTime = timerJoin2(Date.now());
-       
 
-        if (infoRe.used !==0) {
-            await connection.query('UPDATE redenvelopes SET used=used-?, status = 0 WHERE `id_redenvelope` = ? ', [1,infoRe.id_redenvelope]);
+
+        if (infoRe.used !== 0) {
+            await connection.query('UPDATE redenvelopes SET used=used-?, status = 0 WHERE `id_redenvelope` = ? ', [1, infoRe.id_redenvelope]);
             await connection.query('UPDATE users SET money = money + ? WHERE `phone` = ? ', [infoRe.money, userInfo.phone]);
 
             const sql = 'INSERT INTO redenvelopes_used SET phone = ?, phone_used = ?, id_redenvelops = ?, money = ?, `time` = ? ';
             await connection.query(sql, [infoRe.phone, userInfo.phone, infoRe.id_redenvelope, infoRe.money, currentTime]);
 
-            await connection.query(`INSERT INTO transaction_history SET phone=?, detail=?,balance=?, time = NOW()`,[userInfo.phone,"Red envelope",infoRe.money])
+            await connection.query(`INSERT INTO transaction_history SET phone=?, detail=?,balance=?, time = NOW()`, [userInfo.phone, "Red envelope", infoRe.money])
             return res.status(200).json({
                 message: `Successfully received +${infoRe.money}`,
                 status: true,
@@ -3643,22 +3575,22 @@ const updateRecharge = async (req, res) => {
 
 const userProblem = async (req, res) => {
     let auth = req.cookies.auth;
-  var {gameId,orderNo,amount, issue,utr}=req.body
+    var { gameId, orderNo, amount, issue, utr } = req.body
 
-if(orderNo==""){
-    orderNo=0
-}else
-if(utr==""){
-    utr=0
-}
-// try {
-    
+    if (orderNo == "") {
+        orderNo = 0
+    } else
+        if (utr == "") {
+            utr = 0
+        }
+    // try {
+
 
     if (!auth) {
-      return res.status(200).json({
-                message: 'user Not found',
-                status: false,
-            })      
+        return res.status(200).json({
+            message: 'user Not found',
+            status: false,
+        })
     }
     const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
     let userInfo = user[0];
@@ -3669,124 +3601,124 @@ if(utr==""){
             timeStamp: timeNow,
         });
     };
-   
-      const data=  await connection.query('INSERT INTO user_problem SET phone=?,user_id=?,issue=?,	amount=?,orderNo=?,utr=?,today=NOW()', [userInfo.phone,gameId,issue,amount,orderNo,utr]);
-        return res.status(200).json({
-            message: 'Requst submited successfull',
-            status: true,
-            data:data
-        });
+
+    const data = await connection.query('INSERT INTO user_problem SET phone=?,user_id=?,issue=?,	amount=?,orderNo=?,utr=?,today=NOW()', [userInfo.phone, gameId, issue, amount, orderNo, utr]);
+    return res.status(200).json({
+        message: 'Requst submited successfull',
+        status: true,
+        data: data
+    });
     // } catch (error) {
-    
+
     // }
 
 }
 
 const userProblemGet = async (req, res) => {
     let auth = req.cookies.auth;
-  var {id,issue}=req.body
+    var { id, issue } = req.body
 
-try {
-    
+    try {
 
-    if (!auth) {
-      return res.status(200).json({
+
+        if (!auth) {
+            return res.status(200).json({
                 message: 'user Not found',
                 status: false,
-            })      
-    }
-    const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
+            })
+        }
+        const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
 
-    if (!user) {
-        return res.status(200).json({
-            message: 'user not found',
-            status: false,
-        });
-    };
-   
-      const datas=  await connection.execute('SELECT * FROM user_problem WHERE user_id=? AND issue=?', [id,issue]);
+        if (!user) {
+            return res.status(200).json({
+                message: 'user not found',
+                status: false,
+            });
+        };
+
+        const datas = await connection.execute('SELECT * FROM user_problem WHERE user_id=? AND issue=?', [id, issue]);
         return res.status(200).json({
             message: 'Requst submited successfull',
-          success:true,
-            data:datas[0]
+            success: true,
+            data: datas[0]
         });
     } catch (error) {
-    
+
     }
 
 }
 
 const adminProblemGet = async (req, res) => {
     let auth = req.cookies.auth;
-try {
-    if (!auth) {
-      return res.status(200).json({
+    try {
+        if (!auth) {
+            return res.status(200).json({
                 message: 'user Not found',
                 status: false,
-            })      
-    }
-    const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
+            })
+        }
+        const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
 
-    if (!user) {
-        return res.status(200).json({
-            message: 'user not found',
-            status: false,
-        });
-    };
-    
-      const datas=  await connection.execute('SELECT * FROM user_problem WHERE status=0');
+        if (!user) {
+            return res.status(200).json({
+                message: 'user not found',
+                status: false,
+            });
+        };
+
+        const datas = await connection.execute('SELECT * FROM user_problem WHERE status=0');
         return res.status(200).json({
             message: 'Requst submited successfull',
-          success:true,
-            data:datas[0]
+            success: true,
+            data: datas[0]
         });
     } catch (error) {
-    
+
     }
 
 }
 
 const adminProblemSubmit = async (req, res) => {
     let auth = req.cookies.auth;
-    const {type,remark,id}=req.body
-try {
-    if (!auth) {
-      return res.status(200).json({
+    const { type, remark, id } = req.body
+    try {
+        if (!auth) {
+            return res.status(200).json({
                 message: 'user Not found',
                 status: false,
-            })      
-    }
-    const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
+            })
+        }
+        const [user] = await connection.query('SELECT `phone`, `code`,`invite` FROM users WHERE `token` = ? ', [auth]);
 
-    if (!user) {
-        return res.status(200).json({
-            message: 'user not found',
-            status: false,
-        });
-    };
-    
- 
-     
-     if(type==="confirm"){
-        await connection.execute('UPDATE user_problem SET status=1 WHERE id=?', [id]);
-        return res.status(200).json({
-            message: 'Requst submited successful',
-          success:true,
-        });
-     }
-     
-     if(type==="delete"){
-           await connection.execute('UPDATE user_problem SET status=2,remark=? WHERE id=?', [remark,id]);
-        return res.status(200).json({
-            message: 'Requst submited successful',
-          success:true,
-        });
-     }
-     
-     
-     
+        if (!user) {
+            return res.status(200).json({
+                message: 'user not found',
+                status: false,
+            });
+        };
+
+
+
+        if (type === "confirm") {
+            await connection.execute('UPDATE user_problem SET status=1 WHERE id=?', [id]);
+            return res.status(200).json({
+                message: 'Requst submited successful',
+                success: true,
+            });
+        }
+
+        if (type === "delete") {
+            await connection.execute('UPDATE user_problem SET status=2,remark=? WHERE id=?', [remark, id]);
+            return res.status(200).json({
+                message: 'Requst submited successful',
+                success: true,
+            });
+        }
+
+
+
     } catch (error) {
-    
+
     }
 
 }
@@ -3892,14 +3824,14 @@ function md5Sign(data, key) {
 
 
 
-const handleRecharge=async(req,res)=>{
- let auth = req.cookies.auth;
+const handleRecharge = async (req, res) => {
+    let auth = req.cookies.auth;
     let rechid = req.cookies.orderid;
     let money = req.body.amount;
     let type = req.body.type;
     let typeid = req.body.typeid;
     let utr = req.body.utr;
-    
+
     // console.log("req.body",req.body)
     if (type != 'cancel' && type != 'submit' && type != 'submitauto') {
         if (!auth || !money || money <= 99) {
@@ -3919,50 +3851,50 @@ const handleRecharge=async(req,res)=>{
             timeStamp: timeNow,
         });
     };
-    
-    
-    let checkTime =timerJoin2(Date.now());
-      let time = timerJoin2(Date.now());
-    try{
-      let merchantId = 'YD3370';
-    let secret_key = 'P7hpHyagfjsAQ54k';
-    const orderId = getRechargeOrderId();
-    const notify_url=`https://bdgwin99.biz/api/webapi/callbackdatalgpay`;
-    const return_url=`https://bdgwin99.biz/#/wallet/WithdrawalHistory`;
-    // Prepare parameters
-    const params = {
-      app_id: merchantId,
-      trade_type: 'INRUPI',
-      order_sn: orderId,
-      money: money*100,
-      notify_url: notify_url,
-      return_url: return_url,
-      ip: '65.109.57.45',
-      remark: 'inr888',
-    };
-    
-    // console.log("mone",params)
-    const sign = md5Sign(params, secret_key);
-    params.sign = sign;
-    const postData = new URLSearchParams(params).toString();
-    
-    // Collection interface URL
-    const url = 'https://www.lg-pay.com/api/order/create';
 
-       const response = await axios.post(url, postData, {
+
+    let checkTime = timerJoin2(Date.now());
+    let time = timerJoin2(Date.now());
+    try {
+        let merchantId = 'YD3370';
+        let secret_key = 'P7hpHyagfjsAQ54k';
+        const orderId = getRechargeOrderId();
+        const notify_url = `https://bdgwin99.biz/api/webapi/callbackdatalgpay`;
+        const return_url = `https://bdgwin99.biz/#/wallet/WithdrawalHistory`;
+        // Prepare parameters
+        const params = {
+            app_id: merchantId,
+            trade_type: 'INRUPI',
+            order_sn: orderId,
+            money: money * 100,
+            notify_url: notify_url,
+            return_url: return_url,
+            ip: '65.109.57.45',
+            remark: 'inr888',
+        };
+
+        // console.log("mone",params)
+        const sign = md5Sign(params, secret_key);
+        params.sign = sign;
+        const postData = new URLSearchParams(params).toString();
+
+        // Collection interface URL
+        const url = 'https://www.lg-pay.com/api/order/create';
+
+        const response = await axios.post(url, postData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
-    //   console.log("Final Response:", response.data,"order number",orderId);
-      
-      
-    // if(sunpayResponse.data.respCode==="SUCCESS"){
-        
-    // }
+        //   console.log("Final Response:", response.data,"order number",orderId);
 
 
- const sql = `INSERT INTO recharge SET
+        // if(sunpayResponse.data.respCode==="SUCCESS"){
+
+        // }
+
+
+        const sql = `INSERT INTO recharge SET
         id_order = ?,
         transaction_id = ?,
         phone = ?,
@@ -3975,74 +3907,74 @@ const handleRecharge=async(req,res)=>{
   userStatus=?
         
         `;
-    await connection.execute(sql, [orderId, '0', userInfo.phone, money, type, 0, checkTime, '0', time,0]); 
-        
-      return res.status(200).json({
-          message: 'Payment Initiated successfully',
-        //   recharge: recharge,
-          data: response.data?.data,
-          status: true,
-      });
-        
-    }catch(error){
-      return res.status(500).json({
-      message: "Internal server error",
-      success: false,
-      error: error.response?.data || error.message,
-    });   
+        await connection.execute(sql, [orderId, '0', userInfo.phone, money, type, 0, checkTime, '0', time, 0]);
+
+        return res.status(200).json({
+            message: 'Payment Initiated successfully',
+            //   recharge: recharge,
+            data: response.data?.data,
+            status: true,
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error",
+            success: false,
+            error: error.response?.data || error.message,
+        });
     }
 }
-const callbackdatalgpay=async(req,res)=>{
-   
-//   console.log("jossd",req.body)
-   try {
-       const {
-      order_sn,
-      money,
-      status,
-      pay_time,
-      msg,
-      remark,
-      sign	
-      } = req.body;
- 
-      const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [order_sn]);
+const callbackdatalgpay = async (req, res) => {
 
-      if (info.length > 0) {
-          if (info[0].status === 1) {
-              console.log('Recharge status is already completed. Skipping user money update.');
-          } else {
-    
-             
-              
-               const checkTime =timerJoin2(Date.now())
+    //   console.log("jossd",req.body)
+    try {
+        const {
+            order_sn,
+            money,
+            status,
+            pay_time,
+            msg,
+            remark,
+            sign
+        } = req.body;
+
+        const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [order_sn]);
+
+        if (info.length > 0) {
+            if (info[0].status === 1) {
+                console.log('Recharge status is already completed. Skipping user money update.');
+            } else {
+
+
+
+                const checkTime = timerJoin2(Date.now())
                 const [Firstrecharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status = ?', [info[0].phone, 1]);
-         
-         
-               let bonus = 0;
-        if (info[0].money == 300) {
-          bonus = 48;
-        } else if (info[0].money == 500) {
-          bonus = 108;
-        } else if (info[0].money == 1000) {
-          bonus = 188;
-        } else if (info[0].money == 5000) {
-          bonus = 288;
-        } else if (info[0].money == 10000) {
-          bonus = 488;
-        } else if (info[0].money == 50000) {
-          bonus = 5000;
-        } else if (info[0].money == 100000) {
-          bonus = 12000;
-        } else {
-          bonus = info[0].money * 0.03;
-        }
-        
-           if (Firstrecharge.length === 0) {
-              
-           
-        
-                const sql = `INSERT INTO transaction SET
+
+
+                let bonus = 0;
+                if (info[0].money == 300) {
+                    bonus = 48;
+                } else if (info[0].money == 500) {
+                    bonus = 108;
+                } else if (info[0].money == 1000) {
+                    bonus = 188;
+                } else if (info[0].money == 5000) {
+                    bonus = 288;
+                } else if (info[0].money == 10000) {
+                    bonus = 488;
+                } else if (info[0].money == 50000) {
+                    bonus = 5000;
+                } else if (info[0].money == 100000) {
+                    bonus = 12000;
+                } else {
+                    bonus = info[0].money * 0.03;
+                }
+
+                if (Firstrecharge.length === 0) {
+
+
+
+                    const sql = `INSERT INTO transaction SET
                 purpose = ?,
                 phone = ?,
                 money = ?,
@@ -4051,91 +3983,91 @@ const callbackdatalgpay=async(req,res)=>{
                 level = ?,
                 today = ?,
                 time = ?`;
-                await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
-                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);
-                const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus,checkTime]);
+                    await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                    const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                    await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus, checkTime]);
 
+                    // upline
+
+                } else {
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                }
+
+                await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [order_sn]);
+                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money, info[0].money, info[0].money, info[0].phone]);
+
+                const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money, checkTime]);
                 // upline
-            
-            }else{
-                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);  
+                let refferal = info[0]?.invite;
+                if (refferal !== undefined) {
+                    let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
+
+                    const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                    await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus, checkTime]);
+                }
+
             }
+        } else {
+            console.log('Transaction not found.');
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
-                  await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [order_sn]);
-            await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money,info[0].money,info[0].money, info[0].phone]);
-
-            const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-            await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money,checkTime]);
-         // upline
-                let refferal = info[0]?.invite;  
-           if(refferal !==undefined){
-                let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
-                  await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
-    
-                const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus,checkTime]);
-                 }
-
-          }
-      } else {
-          console.log('Transaction not found.');
-      }
-  } catch (error) {
-      console.log(error);
-  }
-  
 }
 
 
 
-const callbackdata=async(req,res)=>{
-   
-     try {
-       const {
-          mchId,
-          mchOrderNo,
-          orderDate,
-          oriAmount,
-          tradeResult,
-          signType,
-          sign,
-          merRetMsg,
-          orderNo
-      } = req.body;
- 
-      const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [mchOrderNo]);
+const callbackdata = async (req, res) => {
 
-      if (info.length > 0) {
-          if (info[0].status === 1) {
-              console.log('Recharge status is already completed. Skipping user money update.');
-          } else {
-            
-            
-               const checkTime =timerJoin2(Date.now())
+    try {
+        const {
+            mchId,
+            mchOrderNo,
+            orderDate,
+            oriAmount,
+            tradeResult,
+            signType,
+            sign,
+            merRetMsg,
+            orderNo
+        } = req.body;
+
+        const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [mchOrderNo]);
+
+        if (info.length > 0) {
+            if (info[0].status === 1) {
+                console.log('Recharge status is already completed. Skipping user money update.');
+            } else {
+
+
+                const checkTime = timerJoin2(Date.now())
                 const [Firstrecharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status = ?', [info[0].phone, 1]);
-         
-                 let bonus = 0;
-        if (info[0].money == 300) {
-          bonus = 48;
-        } else if (info[0].money == 500) {
-          bonus = 108;
-        } else if (info[0].money == 1000) {
-          bonus = 188;
-        } else if (info[0].money == 5000) {
-          bonus = 288;
-        } else if (info[0].money == 10000) {
-          bonus = 488;
-        } else if (info[0].money == 50000) {
-          bonus = 5000;
-        } else if (info[0].money == 100000) {
-          bonus = 12000;
-        } else {
-          bonus = info[0].money * 0.03;
-        }
-           if (Firstrecharge.length === 0) {
-           
-                const sql = `INSERT INTO transaction SET
+
+                let bonus = 0;
+                if (info[0].money == 300) {
+                    bonus = 48;
+                } else if (info[0].money == 500) {
+                    bonus = 108;
+                } else if (info[0].money == 1000) {
+                    bonus = 188;
+                } else if (info[0].money == 5000) {
+                    bonus = 288;
+                } else if (info[0].money == 10000) {
+                    bonus = 488;
+                } else if (info[0].money == 50000) {
+                    bonus = 5000;
+                } else if (info[0].money == 100000) {
+                    bonus = 12000;
+                } else {
+                    bonus = info[0].money * 0.03;
+                }
+                if (Firstrecharge.length === 0) {
+
+                    const sql = `INSERT INTO transaction SET
                 purpose = ?,
                 phone = ?,
                 money = ?,
@@ -4144,40 +4076,40 @@ const callbackdata=async(req,res)=>{
                 level = ?,
                 today = ?,
                 time = ?`;
-                await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
-                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);
-                const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus,checkTime]);
+                    await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                    const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                    await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus, checkTime]);
 
-               
-            }else{
-                   await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);
+
+                } else {
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                }
+
+                await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [mchOrderNo]);
+                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money, info[0].money, info[0].money, info[0].phone]);
+
+                const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money, checkTime]);
+
+                // upline
+                let refferal = info[0]?.invite;
+                if (refferal !== undefined) {
+                    let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
+
+                    const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                    await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus, checkTime]);
+                }
+
             }
+        } else {
+            console.log('Transaction not found.');
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
-                  await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [mchOrderNo]);
-            await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money,info[0].money,info[0].money, info[0].phone]);
-
-            const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-            await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money,checkTime]);
-        
-         // upline
-                let refferal = info[0]?.invite;  
-           if(refferal !==undefined){
-                let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
-                  await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
-    
-                const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus,checkTime]);
-                 }
-                 
-          }
-      } else {
-          console.log('Transaction not found.');
-      }
-  } catch (error) {
-      console.log(error);
-  }
-  
 }
 
 
@@ -4202,23 +4134,23 @@ function md5Sign2(params, secretKey = "") {
 }
 
 const handleRechargeppay = async (req, res) => {
-    
+
     let auth = req.cookies.auth;
     let rechid = req.cookies.orderid;
     let money = req.body.amount;
     let type = req.body.type;
     let typeid = req.body.typeid;
     let utr = req.body.utr;
-    
 
-        if (!auth || !money || money <= 99) {
-            return res.status(200).json({
-                message: 'Minimum recharge 100',
-                status: false,
-                timeStamp: timeNow,
-            })
-        }
-    
+
+    if (!auth || !money || money <= 99) {
+        return res.status(200).json({
+            message: 'Minimum recharge 100',
+            status: false,
+            timeStamp: timeNow,
+        })
+    }
+
     const [user] = await connection.query('SELECT `phone`, `code`,`invite`,`isdemo` FROM users WHERE `token` = ?', [auth]);
     let userInfo = user[0];
     if (!user) {
@@ -4228,10 +4160,10 @@ const handleRechargeppay = async (req, res) => {
             timeStamp: timeNow,
         });
     };
-    
-    
-    let checkTime =timerJoin2(Date.now());
-      let time = timerJoin2(Date.now());
+
+
+    let checkTime = timerJoin2(Date.now());
+    let time = timerJoin2(Date.now());
     try {
         const merchantId = 'M555167'; // Replace with your actual Merchant ID
         const appId = '6794b15ee4b014d312dadd0a'; // Replace with your actual App ID
@@ -4244,18 +4176,18 @@ const handleRechargeppay = async (req, res) => {
             mchNo: merchantId,
             appId: appId,
             mchOrderNo: orderId,
-            amount: money*100, 
+            amount: money * 100,
             customerName: "ZhanSan",
             customerEmail: "zhangn@gmail.com",
             customerPhone: userInfo.phone,
             notifyUrl: notify_url,
         };
-const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJlLdbLb9nmIPXIKfMtT9Lh2iAWYKcOw9I45jVsh1jBBdhfFcYHcXdrUM77UK"
+        const key = "7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJlLdbLb9nmIPXIKfMtT9Lh2iAWYKcOw9I45jVsh1jBBdhfFcYHcXdrUM77UK"
         // Generate the MD5 signature
-        const sign = md5Sign2(params,key);
+        const sign = md5Sign2(params, key);
         params.sign = sign;
 
- 
+
 
         // Prepare the request payload
         const postData = JSON.stringify(params);
@@ -4269,11 +4201,11 @@ const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJ
                 'Content-Type': 'application/json',
             },
         });
-        
-        
-      console.log("response?.data",response?.data)
-        
-        if(response?.data?.code===0){
+
+
+        console.log("response?.data", response?.data)
+
+        if (response?.data?.code === 0) {
             const sql = `INSERT INTO recharge SET
         id_order = ?,
         transaction_id = ?,
@@ -4287,22 +4219,22 @@ const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJ
   userStatus=?
         
         `;
-    await connection.execute(sql, [orderId, '0', userInfo.phone, money, type, 0, checkTime, '0', time,0]); 
-      return res.status(200).json({
-            message: 'Payment Initiated successfully',
-            data: response.data?.data,
-            status: true,
-        });
-        }else{
-              return res.status(200).json({
-            message: 'Payment failed',
-            data: response.data?.data,
-            status: false,
-        });
+            await connection.execute(sql, [orderId, '0', userInfo.phone, money, type, 0, checkTime, '0', time, 0]);
+            return res.status(200).json({
+                message: 'Payment Initiated successfully',
+                data: response.data?.data,
+                status: true,
+            });
+        } else {
+            return res.status(200).json({
+                message: 'Payment failed',
+                data: response.data?.data,
+                status: false,
+            });
         }
 
         // Return the success response
-      
+
     } catch (error) {
         console.error("Error:", error.response?.data || error.message); // Debugging the error
         return res.status(500).json({
@@ -4313,24 +4245,24 @@ const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJ
     }
 };
 
-const callbackdatappay=async(req,res)=>{
+const callbackdatappay = async (req, res) => {
     // console.log("req",req.body)
-    const {payOrderId,mchOrderNo}=req.body
-    
-    try{
-     const merchantId = 'M555167'; // Replace with your actual Merchant ID
+    const { payOrderId, mchOrderNo } = req.body
+
+    try {
+        const merchantId = 'M555167'; // Replace with your actual Merchant ID
         const appId = '6794b15ee4b014d312dadd0a';
         // Prepare parameters
         const params = {
             mchNo: merchantId,
             appId: appId,
-            payOrderId:payOrderId,
+            payOrderId: payOrderId,
             mchOrderNo: mchOrderNo,
         };
-const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJlLdbLb9nmIPXIKfMtT9Lh2iAWYKcOw9I45jVsh1jBBdhfFcYHcXdrUM77UK"
+        const key = "7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJlLdbLb9nmIPXIKfMtT9Lh2iAWYKcOw9I45jVsh1jBBdhfFcYHcXdrUM77UK"
 
         // Generate the MD5 signature
-        const sign = md5Sign2(params,key);
+        const sign = md5Sign2(params, key);
         params.sign = sign;
         // Prepare the request payload
         const postData = JSON.stringify(params);
@@ -4345,41 +4277,41 @@ const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJ
             },
         });
         //   console.log("res",response)
-           
-           
-           if(response?.data?.code===0){
-               
-               
-                const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [mchOrderNo]);
 
-      if (info.length > 0) {
-          if (info[0].status === 1) {
-              console.log('Recharge status is already completed. Skipping user money update.');
-          } else {
-          const checkTime =timerJoin2(Date.now())
-                const [Firstrecharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status = ?', [info[0].phone, 1]);
-         
-                 let bonus = 0;
-        if (info[0].money == 300) {
-          bonus = 48;
-        } else if (info[0].money == 500) {
-          bonus = 108;
-        } else if (info[0].money == 1000) {
-          bonus = 188;
-        } else if (info[0].money == 5000) {
-          bonus = 288;
-        } else if (info[0].money == 10000) {
-          bonus = 488;
-        } else if (info[0].money == 50000) {
-          bonus = 5000;
-        } else if (info[0].money == 100000) {
-          bonus = 12000;
-        } else {
-          bonus = info[0].money * 0.03;
-        }
-           if (Firstrecharge.length === 0) {
-           
-                const sql = `INSERT INTO transaction SET
+
+        if (response?.data?.code === 0) {
+
+
+            const [info] = await connection.query('SELECT * FROM recharge WHERE id_order = ?', [mchOrderNo]);
+
+            if (info.length > 0) {
+                if (info[0].status === 1) {
+                    console.log('Recharge status is already completed. Skipping user money update.');
+                } else {
+                    const checkTime = timerJoin2(Date.now())
+                    const [Firstrecharge] = await connection.query('SELECT * FROM recharge WHERE phone = ? AND status = ?', [info[0].phone, 1]);
+
+                    let bonus = 0;
+                    if (info[0].money == 300) {
+                        bonus = 48;
+                    } else if (info[0].money == 500) {
+                        bonus = 108;
+                    } else if (info[0].money == 1000) {
+                        bonus = 188;
+                    } else if (info[0].money == 5000) {
+                        bonus = 288;
+                    } else if (info[0].money == 10000) {
+                        bonus = 488;
+                    } else if (info[0].money == 50000) {
+                        bonus = 5000;
+                    } else if (info[0].money == 100000) {
+                        bonus = 12000;
+                    } else {
+                        bonus = info[0].money * 0.03;
+                    }
+                    if (Firstrecharge.length === 0) {
+
+                        const sql = `INSERT INTO transaction SET
                 purpose = ?,
                 phone = ?,
                 money = ?,
@@ -4388,39 +4320,39 @@ const key="7XEPuuSZUuo1AYbmjQ8eB459XxMQAYMofkp4NXm4ngGHpaf5Jc39AM1lF43ihH0yt1RPJ
                 level = ?,
                 today = ?,
                 time = ?`;
-                await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
-                await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);
-                const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus,checkTime]);
+                        await connection.execute(sql, ['Big Recharge Bonus', info[0].phone, bonus, 'credit', 1, 1, checkTime, checkTime]);
+                        await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                        const datasqll = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                        await connection.query(datasqll, [info[0].phone, "First deposit bonus", bonus, checkTime]);
 
-               
-            }else{
-                   await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus,bonus, info[0].phone]);
+
+                    } else {
+                        await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? WHERE phone = ?', [bonus, bonus, bonus, info[0].phone]);
+                    }
+
+                    await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [mchOrderNo]);
+                    await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money, info[0].money, info[0].money, info[0].phone]);
+
+                    const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                    await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money, checkTime]);
+
+                    // upline
+                    let refferal = info[0]?.invite;
+                    if (refferal !== undefined) {
+                        let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
+                        await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
+
+                        const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
+                        await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus, checkTime]);
+                    }
+
+                }
+            } else {
+                console.log('Transaction not found.');
             }
+        }
 
-                  await connection.query('UPDATE recharge SET status = 1 WHERE id_order = ?', [mchOrderNo]);
-            await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ?,recharge=recharge+? ,totalRecharge=totalRecharge+? WHERE phone = ?', [info[0].money, info[0].money,info[0].money,info[0].money, info[0].phone]);
-
-            const datasqls = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-            await connection.query(datasqls, [info[0].phone, "Deposit", info[0].money,checkTime]);
-        
-         // upline
-                let refferal = info[0]?.invite;  
-           if(refferal !==undefined){
-                let [refferaluser] = await connection.query('SELECT * FROM users WHERE `code` = ? LIMIT 1', [refferal]);
-                  await connection.query('UPDATE users SET money = money + ?, total_money = total_money + ? WHERE phone = ?', [bonus, bonus, refferaluser[0]?.phone]);
-    
-                const datasql = 'INSERT INTO transaction_history SET phone = ?, detail = ?, balance = ?, `time` = ?';
-                await connection.query(datasql, [refferaluser[0]?.phone, "Bonus", bonus,checkTime]);
-                 }
-                 
-          }
-      } else {
-          console.log('Transaction not found.');
-      }
-           }
-    
-} catch (error) {
+    } catch (error) {
         console.error("Error:", error.response?.data || error.message); // Debugging the error
         return res.status(500).json({
             message: "Internal server error",
@@ -4438,9 +4370,9 @@ module.exports = {
     handleRecharge,
     callbackdata,
     callbackdatalgpay,
-     handleRechargeppay,
+    handleRechargeppay,
     callbackdatappay,
-    
+
     userInfo,
     changeUser,
     changePassword,
@@ -4485,10 +4417,10 @@ module.exports = {
     totalCommission,
     vipLevelMonthly,
     aviator,
- commissiondata   ,
-  userProblem ,
- userProblemGet,
- adminProblemGet,
- adminProblemSubmit,
- listRecharge2
+    commissiondata,
+    userProblem,
+    userProblemGet,
+    adminProblemGet,
+    adminProblemSubmit,
+    listRecharge2
 }
