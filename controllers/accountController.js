@@ -301,7 +301,7 @@ const register = async (req, res) => {
     }
    
     if(!invitecode){
-        invitecode="SBvas47413"
+        invitecode="36749100378"
             // invitecode="bnrYl26103"
         
     }

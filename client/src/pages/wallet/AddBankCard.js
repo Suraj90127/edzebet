@@ -35,6 +35,7 @@ const AddBankCard = () => {
       setTimeout(() => {
         setAlerts(false);
       }, 2000);
+      
     });
   };
 

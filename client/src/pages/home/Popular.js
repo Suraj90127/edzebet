@@ -30,13 +30,14 @@ const Popular = () => {
 
   const handleJilliOpen = (data) => {
     setGameId(data);
-    dispatch(rechargeList()).then((res) => {
-      if (res.payload.data2?.length == 0) {
-        setRepoup(true);
-      } else {
-        setJilliPopup(true);
-      }
-    });
+    setJilliPopup(true);
+    // dispatch(rechargeList()).then((res) => {
+    //   if (res.payload.data2?.length == 0) {
+    //     setRepoup(true);
+    //   } else {
+    //     setJilliPopup(true);
+    //   }
+    // });
   };
 
   const handleJilliSubmit = () => {

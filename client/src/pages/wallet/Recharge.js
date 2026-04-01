@@ -8,6 +8,7 @@ import PaytmIcon from "../../assets/paytm.jpg";
 import UpiIcon from "../../assets/upi.png";
 import USDt1Img from "../../assets/usdt1.png";
 import UsdtIcon from "../../assets/usdt.png";
+import tron from "../../assets/tron.png";
 import { GiSwipeCard, GiWhiteBook } from "react-icons/gi";
 import { FaSquare } from "react-icons/fa";
 import CopyCopmponent from "../../components/CopyCopmponent";
@@ -36,8 +37,8 @@ export default function Recharge() {
   const [alertsuccess, setAlertsuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const tabs = [
-    { label: "Trx", Icons: EWalletIcon },
-    { label: "USDT", Icons: UsdtIcon },
+    { label: "Trx", Icons: tron },
+    { label: "USDT", Icons: "" },
   ];
 
   const handleSubmit = async () => {
@@ -155,14 +156,14 @@ export default function Recharge() {
                 }
               }}
             >
-              <img src={tab.Icons} alt="" className="w-10" />
+              <img src={tab.Icons} alt="" className="w-14" />
               <span> {tab.label}</span>
             </button>
           ))}
         </div>
         <div className="mt-4">
           <>
-            <div className="nav-bg  p-2 py-3 pb-5 rounded-lg">
+            <div className="nav-bg  p-2 py-3 pb-5 rounded-lg hidden">
               <h2 className="text-lg mb-2 flex items-center gray-50">
                 <GiSwipeCard className="color-blue border-b border-blue-500 mr-2" />{" "}
                 Select channel
@@ -178,7 +179,7 @@ export default function Recharge() {
                             className={` p-2 rounded-md cursor-pointer ${
                               index === activeIndex
                                 ? "blue-linear color-orange"
-                                : "bg-grays black-2"
+                                : "bg-grays"
                             } `}
                             onClick={() => {
                               setActiveTab2(item.label);
@@ -220,7 +221,7 @@ export default function Recharge() {
                                   onClick={() => setAmount(data.am)}
                                 >
                                   <img
-                                    src={USDt1Img}
+                                    src={UsdtIcon}
                                     alt=""
                                     className="w-5 mr-2"
                                   />{" "}
@@ -237,7 +238,7 @@ export default function Recharge() {
                 </div>
 
                 <div className="bg-body flex items-center px-5 py-1 rounded-lg mt-4">
-                  <img src={USDt1Img} alt="" className="w-5" />
+                  <img src={UsdtIcon} alt="" className="w-5" />
 
                   <input
                     type="number"

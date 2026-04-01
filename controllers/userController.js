@@ -1161,7 +1161,7 @@ const recharge = async (req, res) => {
     let typeid = req.body.typeid;
     let utr = req.body.utr;
     if (type != 'cancel' && type != 'submit' && type != 'submitauto') {
-        if (!auth || !money || money <= 199) {
+        if (!auth || !money || money <= 99) {
             return res.status(200).json({
                 message: 'Minimum recharge 200',
                 status: false,
@@ -1562,7 +1562,7 @@ const withdrawal3 = async (req, res) => {
     let type = req.body.type;
     let money = req.body.money;
     let password = req.body.password;
-    if (!auth || !money || money < 199) {
+    if (!auth || !money || money < 109) {
         return res.status(200).json({
             message: 'Minimum amount 200',
             status: false,

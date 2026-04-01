@@ -169,7 +169,7 @@ useEffect(() => {
 
             {selectedIssue && (
               <>
-                <label className="gray-50 block text-left mb-2  font-semibold">* BDG club Games ID:</label>
+                <label className="gray-50 block text-left mb-2  font-semibold">* edzebet Games ID:</label>
                 <input
                   type="text"
                   name="gameId"

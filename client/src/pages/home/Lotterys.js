@@ -9,14 +9,17 @@ const Lotterys = () => {
     const navigate = useNavigate()
     const [repopup, setRepoup] = useState(false);
     const dispatch = useDispatch();
+
+
     const handPath = async (params) => {
-        dispatch(rechargeList()).then((res) => {
-            if (res.payload.data2?.length == 0) {
-                setRepoup(true);
-            } else {
-                navigate(params)
-            }
-        });
+         navigate(params)
+        // dispatch(rechargeList()).then((res) => {
+        //     if (res.payload.data2?.length == 0) {
+        //         setRepoup(true);
+        //     } else {
+        //         navigate(params)
+        //     }
+        // });
     }
 
     const handleCloseRecharge = () => {
@@ -62,7 +65,7 @@ const Lotterys = () => {
 
 
             <div className="grid grid-cols-12 gap-3 mt-3">
-                <Link onClick={() => handPath("/WinGo")} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
+                <Link to={"/WinGo"} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
                     <div>
                         <h3 className="black-2 text-base font-bold">Win Go</h3>
                         <p className="fs-sm   black-2 mt-2 font-semibold">Guess Number</p>
@@ -70,7 +73,7 @@ const Lotterys = () => {
                     </div>
                     <img src={Wingo} alt="" className="w-24 ml-2" />
                 </Link>
-                <Link onClick={() => handPath("/k3")} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
+                <Link to={"/k3"} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
                     <div>
                         <h3 className="black-2 text-base font-bold">K3</h3>
                         <p className="fs-sm   black-2 mt-2 font-semibold">Guess Number</p>
@@ -78,7 +81,7 @@ const Lotterys = () => {
                     </div>
                     <img src={K3} alt="" className="w-24 ml-2" />
                 </ Link>
-                <Link onClick={() => handPath("/5d")} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
+                <Link to={"/5d"} className="col-span-12 relative  items-center justify-between  px-3 bg-home-lg rounded-3xl  flex"  >
                     <div>
                         <h3 className="black-2 text-base font-bold">5D</h3>
                         <p className="fs-sm   black-2 mt-2 font-semibold">Guess Number</p>

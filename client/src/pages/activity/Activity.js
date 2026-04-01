@@ -87,11 +87,11 @@ const Activity = () => {
 
 
         <div className='nav-bg mt-3 rounded-xl' onClick={()=>navigate("/activity/DailySignIn")}>
-          <img src={bannergetData?.activity?.ban1} alt="" loading="lazy"  className='rounded-t-xl h-44 w-full' />
+          <img src={ban1} alt="" loading="lazy"  className='rounded-t-xl h-44 w-full' />
           <h3 className="heading-h3 gray-50 font-bold p-2">Get Daily Check-in Bonus</h3>
         </div>
         <div className='nav-bg mt-3 rounded-xl' onClick={()=>navigate("/activity/ActivityDetail?id=2")}>
-          <img src={bannergetData?.activity?.ban2} alt="" loading="lazy"  className='rounded-t-xl h-44 w-full ' />
+          <img src={ban2} alt="" loading="lazy"  className='rounded-t-xl h-44 w-full ' />
           <h3 className="heading-h3 gray-50 font-bold p-2">VIP Weekly & Monthly Package</h3>
         </div>
         <div className='nav-bg mt-3 rounded-xl'  onClick={()=>navigate("/activity/ActivityDetail?id=3")}>

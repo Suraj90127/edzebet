@@ -136,7 +136,7 @@ const Register = () => {
                             />
                         </div>
                     </div>
-                    <p className='fs-sm mt-1 color-l leading-3'>The phone number cannot start with 0 when registering! <br />1234567890</p>
+                    {/*<p className='fs-sm mt-1 color-l leading-3'>The phone number cannot start with 0 when registering! <br />1234567890</p>*/}
                     <div className='mt-4'>
                         <div className='flex items-center'>
                             <span>
