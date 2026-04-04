@@ -51,8 +51,7 @@ export default function Recharge() {
       setSuccessMessage(res?.payload?.message);
       if (res?.payload?.status) {
         setAlertsuccess(true);
-        // navigate("/wallet/Recharge/pay");
-        navigate("/wallet/Recharge");
+        navigate("/wallet/Recharge/pay");
       } else {
         setAlerts(true);
       }

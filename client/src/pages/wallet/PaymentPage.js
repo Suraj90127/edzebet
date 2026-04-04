@@ -127,7 +127,7 @@ const PaymentPage = () => {
           </div>
         </div>
         <div className=" my-4"></div>
-        <div className="text-center mb-4">
+        {/* <div className="text-center mb-4">
           <p className="font-semibold">QR</p>
           <p className="text-sm text-gray-500">Scan Code To Pay</p>
 
@@ -139,7 +139,7 @@ const PaymentPage = () => {
           <Link to={pay1}>
             <img src={Googlepay} alt="QR Code" className="mx-auto my-2 w-28" />
           </Link>
-        </div>
+        </div> */}
         <div className=" my-4 mt-5"></div>
 
         <div className="text-center mb-4">
