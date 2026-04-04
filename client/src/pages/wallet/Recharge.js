@@ -48,10 +48,11 @@ export default function Recharge() {
     };
 
     dispatch(recharge(data)).then((res) => {
-      setSuccessMessage(res.payload.message);
-      if (res.payload.status) {
+      setSuccessMessage(res?.payload?.message);
+      if (res?.payload?.status) {
         setAlertsuccess(true);
-        navigate("/wallet/Recharge/pay");
+        // navigate("/wallet/Recharge/pay");
+        navigate("/wallet/Recharge");
       } else {
         setAlerts(true);
       }
