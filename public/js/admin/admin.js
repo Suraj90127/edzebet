@@ -109,7 +109,7 @@ function connectsockets(checkID, host) {
 
 // Usage example
 const typeid1 = 5; // Change this based on your needs
-const host = 'https://bdgwin99.online';
+const host = 'https://edzebet.com';
 const activeVoice = true; // or false, depending on your needs
 
 
