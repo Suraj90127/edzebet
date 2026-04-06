@@ -39,13 +39,13 @@ const PaymentPage = () => {
     const type = "submit";
 
     if (utr.length > 10) {
-       const data = {
+      const data = {
         utr: utr,
         typeid: rechargegetData?.id_order,
         type: type,
       };
 
-  
+
       dispatch(recharge(data)).then((res) => {
         setSuccessMessage(res.payload.message);
 
@@ -111,12 +111,19 @@ const PaymentPage = () => {
           </div>
         </div>
         <div className="bgs-green mt-3 p-4">
-          <div className="flex justify-between py-2">
-            <div>
-              <p className="text-base">2024-07-28 14:26</p>
-              <p className="text-base">TMWi8K8uvbyEmpPGn6VyWdKEcwdqsvrUuQ</p>
+          <div className="flex justify-between items-center py-2">
+            <div className="flex flex-col">
+              <p className="text-sm leading-tight">
+                {new Date().toLocaleString()}
+              </p>
+              <p className="text-sm leading-tight break-all">
+                TMWi8K8uvbyEmpPGn6VyWdKEcwdqsvrUuQ
+              </p>
             </div>
-            <p className="text-base font-bold">Time is up!</p>
+
+            <p className="text-sm font-bold whitespace-nowrap">
+              Time is up!
+            </p>
           </div>
           <div className=" text-white py-4">
             <p className="text-3xl font-bold">
