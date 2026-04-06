@@ -1,6 +1,8 @@
 
 var socket = io();
 let typeid = $('html').attr('data-change');
+console.log("type",typeid);
+
 let game = '';
 if (typeid == '1') game = 'wingo';
 if (typeid == '2') game = 'wingo3';
@@ -307,6 +309,9 @@ socket.on("data-server", function (msg) {
             
             
             showJoinMember(response.datas);
+
+            console.log("rrrrrrrrrrrrrrr",response);
+            
             
             showListOrder3(response.list_orders);
             $(".direct-chat-warning .direct-chat-messages").animate({
@@ -314,7 +319,7 @@ socket.on("data-server", function (msg) {
             }, 750);
             $('.reservation-chunk-sub-num').text(response.lotterys[0].period);
             let is = ''
-            if (typeid == '1') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo1 == '-1') ? 'Random' : response.setting[0].wingo1}`);
+            if (typeid == '1') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo == '-1') ? 'Random' : response.setting[0].wingo}`);
             if (typeid == '2') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo3 == '-1') ? 'Random' : response.setting[0].wingo3}`);
             if (typeid == '3') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo5 == '-1') ? 'Random' : response.setting[0].wingo5}`);
             if (typeid == '4') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo10 == '-1') ? 'Random' : response.setting[0].wingo10}`);
@@ -385,7 +390,7 @@ function myFunction() {
 
             let val = null;
 
-            if (typeid == '1') val = response?.setting?.[0]?.wingo1;
+            if (typeid == '1') val = response?.setting?.[0]?.wingo;
             if (typeid == '2') val = response?.setting?.[0]?.wingo3;
             if (typeid == '3') val = response?.setting?.[0]?.wingo5;
             if (typeid == '4') val = response?.setting?.[0]?.wingo10;
