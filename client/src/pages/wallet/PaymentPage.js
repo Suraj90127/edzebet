@@ -114,7 +114,7 @@ const PaymentPage = () => {
           <div className="flex justify-between py-2">
             <div>
               <p className="text-base">2024-07-28 14:26</p>
-              <p className="text-base">S20240728140742hSVBTruamqopwK3P1</p>
+              <p className="text-base">TMWi8K8uvbyEmpPGn6VyWdKEcwdqsvrUuQ</p>
             </div>
             <p className="text-base font-bold">Time is up!</p>
           </div>

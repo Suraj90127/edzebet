@@ -316,13 +316,16 @@ const changeAdmin = async (req, res) => {
     let type = req.body.type;
     let typeid = req.body.typeid;
 
-    if (!value || !type || !typeid) return res.status(200).json({
-        message: 'Failed',
-        status: false,
-        timeStamp: timeNow,
-    });;
+    if (!value || !type || !typeid) {
+        return res.status(200).json({
+            message: 'Failed',
+            status: false,
+        });
+    }
+
     let game = '';
     let bs = '';
+
     if (typeid == '1') {
         game = 'wingo1';
         bs = 'bs1';
@@ -339,34 +342,37 @@ const changeAdmin = async (req, res) => {
         game = 'wingo10';
         bs = 'bs10';
     }
+
     switch (type) {
+
         case 'change-wingo1':
             await connection.query(`UPDATE admin SET ${game} = ? `, [value]);
+
+            // 🔥 SOCKET EMIT
+            io.emit("result:update", {
+                next: value
+            });
+
             return res.status(200).json({
                 message: 'Editing results successfully',
                 status: true,
-                timeStamp: timeNow,
             });
-            break;
+
         case 'change-win_rate':
             await connection.query(`UPDATE admin SET ${bs} = ? `, [value]);
+
             return res.status(200).json({
                 message: 'Editing win rate successfully',
                 status: true,
-                timeStamp: timeNow,
             });
-            break;
 
         default:
             return res.status(200).json({
                 message: 'Failed',
                 status: false,
-                timeStamp: timeNow,
             });
-            break;
     }
-
-}
+};
 
 function formateT(params) {
     let result = (params < 10) ? "0" + params : params;

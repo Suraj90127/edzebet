@@ -363,15 +363,11 @@ function showListOrder3(list_orders, x) {
 
 
 
-// Execute myFunction every 2 seconds (2000 milliseconds)
 
-
-// To stop the interval after a certain time or condition, use clearInterval
-// clearInterval(intervalId);
 
 function myFunction() {
     
-$.ajax({
+    $.ajax({
         type: "POST",
         url: "/api/webapi/admin/totalJoin",
         data: {
@@ -379,25 +375,53 @@ $.ajax({
         },
         dataType: "json",
         success: function (response) {
-            var red = 0;
-            var green = 0;
-            var violet = 0;
-            var n0 = 0;
-            var n1 = 0;
-            var n2 = 0;
-            var n3 = 0;
-            var n4 = 0;
-            var n5 = 0;
-            var n6 = 0;
-            var n7 = 0;
-            var n8 = 0;
-            var n9 = 0;
-            var n = 0;
-            var l = 0;
-            var ns = 0;
-            var length = response.datas.length;
-            var datas = response.datas;
-            for (let i = 0; i < length; i++) {
+
+            // 🔍 DEBUG (optional)
+            console.log("SETTING:", response.setting);
+
+            // ===============================
+            // ✅ SAFE NEXT RESULT FIX
+            // ===============================
+
+            let val = null;
+
+            if (typeid == '1') val = response?.setting?.[0]?.wingo1;
+            if (typeid == '2') val = response?.setting?.[0]?.wingo3;
+            if (typeid == '3') val = response?.setting?.[0]?.wingo5;
+            if (typeid == '4') val = response?.setting?.[0]?.wingo10;
+
+            // ✅ Safe render (NO undefined)
+            $('#ketQua').text(`Next Result: ${
+                val ? (val == '-1' ? 'Random' : val) : 0
+            }`);
+
+            // ===============================
+            // ✅ WINRATE FIX (same logic)
+            // ===============================
+
+            let win = null;
+
+            if (typeid == '1') win = response?.setting?.[0]?.bs1;
+            if (typeid == '2') win = response?.setting?.[0]?.bs3;
+            if (typeid == '3') win = response?.setting?.[0]?.bs5;
+            if (typeid == '4') win = response?.setting?.[0]?.bs10;
+
+            $('#winrate').text(`Next Result: ${
+                win ? (win == '-1' ? 'Random' : win) : 0
+            }`);
+
+            // ===============================
+            // बाकी code (same as yours)
+            // ===============================
+
+            var red = 0, green = 0, violet = 0;
+            var n0 = 0, n1 = 0, n2 = 0, n3 = 0, n4 = 0;
+            var n5 = 0, n6 = 0, n7 = 0, n8 = 0, n9 = 0;
+            var n = 0, l = 0, ns = 0;
+
+            var datas = response.datas || [];
+
+            for (let i = 0; i < datas.length; i++) {
                 if (datas[i].bet == '0') n0 += parseFloat(datas[i].money);
                 if (datas[i].bet == '1') n1 += parseFloat(datas[i].money);
                 if (datas[i].bet == '2') n2 += parseFloat(datas[i].money);
@@ -413,12 +437,14 @@ $.ajax({
                 if (datas[i].bet == 'd') red += parseFloat(datas[i].money);
                 if (datas[i].bet == 'l') l += parseFloat(datas[i].money);
                 if (datas[i].bet == 'n') n += parseFloat(datas[i].money);
-                
             }
-            ns = n0 + n1 + n2 + n3 + n4 + n5 + n6 + n7 + n8 + n9;
+
+            ns = n0+n1+n2+n3+n4+n5+n6+n7+n8+n9;
+
             $('.orderRed').text(formatMoney(red, ','));
             $('.orderViolet').text(formatMoney(violet, ','));
             $('.orderGreen').text(formatMoney(green, ','));
+
             $('.orderNumber:eq(0)').text(formatMoney(n0, ','));
             $('.orderNumber:eq(1)').text(formatMoney(n1, ','));
             $('.orderNumber:eq(2)').text(formatMoney(n2, ','));
@@ -429,47 +455,18 @@ $.ajax({
             $('.orderNumber:eq(7)').text(formatMoney(n7, ','));
             $('.orderNumber:eq(8)').text(formatMoney(n8, ','));
             $('.orderNumber:eq(9)').text(formatMoney(n9, ','));
+
             $('.orderNumber:eq(10)').text(formatMoney(l, ','));
             $('.orderNumber:eq(11)').text(formatMoney(n, ','));
             $('.orderNumbers').text(formatMoney(ns, ','));
 
-            $('.orderRed').attr('totalmoney', red);
-            $('.orderViolet').attr('totalmoney', violet);
-            $('.orderGreen').attr('totalmoney', green);
-            $('.orderNumber:eq(0)').attr('totalmoney', n0);
-            $('.orderNumber:eq(1)').attr('totalmoney', n1);
-            $('.orderNumber:eq(2)').attr('totalmoney', n2);
-            $('.orderNumber:eq(3)').attr('totalmoney', n3);
-            $('.orderNumber:eq(4)').attr('totalmoney', n4);
-            $('.orderNumber:eq(5)').attr('totalmoney', n5);
-            $('.orderNumber:eq(6)').attr('totalmoney', n6);
-            $('.orderNumber:eq(7)').attr('totalmoney', n7);
-            $('.orderNumber:eq(8)').attr('totalmoney', n8);
-            $('.orderNumber:eq(9)').attr('totalmoney', n9);
-            $('.orderNumber:eq(10)').attr('totalmoney', l);
-            $('.orderNumber:eq(11)').attr('totalmoney', n);
-            $('.orderNumbers').attr('totalmoney', ns);
-        
-            showJoinMember(response.datas);
-            showListOrder3(response.list_orders);
-            $(".direct-chat-warning .direct-chat-messages").animate({
-                scrollTop: $(".direct-chat-msg").prop("scrollHeight")
-            }, 750);
-            $('.reservation-chunk-sub-num').text(response.lotterys[0].period);
-            let is = ''
-            if (typeid == '1') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo1 == '-1') ? 'Random' : response.setting[0].wingo1}`);
-            if (typeid == '2') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo3 == '-1') ? 'Random' : response.setting[0].wingo3}`);
-            if (typeid == '3') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo5 == '-1') ? 'Random' : response.setting[0].wingo5}`);
-            if (typeid == '4') is = $('#ketQua').text(`Next Result: ${(response.setting[0].wingo10 == '-1') ? 'Random' : response.setting[0].wingo10}`);
-            
-            if (typeid == '1') $('#winrate').text(`Next Result: ${(response.setting[0].bs1 == '-1') ? 'Random' : response.setting[0].bs1}`);
-            if (typeid == '2') $('#winrate').text(`Next Result: ${(response.setting[0].bs3 == '-1') ? 'Random' : response.setting[0].bs3}`);
-            if (typeid == '3') $('#winrate').text(`Next Result: ${(response.setting[0].bs5 == '-1') ? 'Random' : response.setting[0].bs5}`);
-            if (typeid == '4') $('#winrate').text(`Next Result: ${(response.setting[0].bs10 == '-1') ? 'Random' : response.setting[0].bs10}`);
+            showJoinMember(datas);
+            showListOrder3(response.list_orders || []);
+
+            $('.reservation-chunk-sub-num').text(response?.lotterys?.[0]?.period || '-');
+
         }
     });
-
-
 }
 
 const intervalId = setInterval(myFunction, 2000);
@@ -513,40 +510,3 @@ $('.start-order').click(function (e) {
     }
 });
 
-// $('.editWinRate').click(function (e) {
-//     e.preventDefault();
-//     let value = $('#editWinRate').val();
-//     let arr = value.split('|');
-//     for (let i = 0; i < arr.length; i++) {
-//         if (arr[i] == "" || arr[i].length > 1 || arr[i] != 0 && arr[i] != '1') {
-//             alert("Vui lòng nhập đúng định dạng (VD: 1|0|0|1|1)");
-//             return false;
-//         }
-//     }
-//     if (value != '') {
-//         $.ajax({
-//             type: "POST",
-//             url: "/api/webapi/admin/change",
-//             data: {
-//                 type: 'change-win_rate',
-//                 value: value,
-//                 typeid: typeid,
-//             },
-//             dataType: "json",
-//             success: function (response) {
-//                 Swal.fire(
-//                     'Good job!',
-//                     `${response.message}`,
-//                     'success'
-//                 );
-//                 $('#ketQua').text(`Next Result: ${value}`);
-//             }
-//         });
-//     } else {
-//         Swal.fire({
-//             icon: 'error',
-//             title: 'Oops...',
-//             text: 'Something went wrong!',
-//         })
-//     }
-// });
