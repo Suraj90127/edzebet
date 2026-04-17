@@ -61,11 +61,12 @@ import Fishing from "./Fishing";
 import Original from "./Original";
 import { BsFire } from "react-icons/bs";
 import Apkdownload from "./Apkdownload";
-
 import ban3 from "../../assets/banner/SAVE_20250222_011628.jpg";
+import ban4 from "../../assets/banner/homebanner4.png";
 import ban1 from "../../assets/banner/SAVE_20250222_112554.jpg";
 import ban2 from "../../assets/banner/SAVE_20250222_162908.jpg";
-import SpribeGame from "./SpribeGame";
+
+
 import {
   ArcadeGame,
   Bingo,
@@ -277,6 +278,16 @@ const Home = () => {
               <div className="w-full">
                 <img
                   src={ban3}
+                  className="w-full rounded-md h-36"
+                  alt=""
+                  loading="lazy"
+                />
+              </div>
+            </SwiperSlide>
+            <SwiperSlide>
+              <div className="w-full">
+                <img
+                  src={ban4}
                   className="w-full rounded-md h-36"
                   alt=""
                   loading="lazy"

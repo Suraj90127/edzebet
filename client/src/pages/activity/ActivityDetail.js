@@ -2,21 +2,7 @@ import React, { useEffect } from 'react'
 import { IoIosArrowBack } from 'react-icons/io'
 import { useSelector } from 'react-redux'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import Img2 from "../../assets/banner/banner1.png"
-import Img3 from "../../assets/banner/banner4.png"
-import Img4 from "../../assets/banner/banner3.png"
-import Img5 from "../../assets/banner/banner2.png"
-import Img6 from "../../assets/banner/banner1.png"
-import Img7 from "../../assets/banner/banner4.png"
 
-
-import Banner1 from  "../../assets/banner/ban5.png"
-import Banner2 from  "../../assets/banner/ban10.png"
-import Banner3 from  "../../assets/banner/ban3.png"
-import Banner4 from  "../../assets/banner/ban9.png"
-import Banner5 from  "../../assets/banner/ban4.png"
-import Banner6 from  "../../assets/banner/ban7.png"
-import Banner7 from  "../../assets/banner/ban1.png"
 const ActivityDetail = () => {
     const { userInfo,bannergetData } = useSelector((state) => state.auth)
     const navigate = useNavigate()
